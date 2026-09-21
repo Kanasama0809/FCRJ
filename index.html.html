@@ -1,0 +1,1964 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Football Champion Road J</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --pitch:#0A5233;--pitch-alt:#0C5C39;--chalk:#F2F5EE;--ink:#08211A;
+  --amber:#FFC21A;--clay:#D0412C;--line:rgba(242,245,238,.28);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit;}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:env(safe-area-inset-top,0px);}
+body{margin:0;background-color:var(--pitch);
+  background-image:repeating-linear-gradient(90deg,var(--pitch) 0 44px,var(--pitch-alt) 44px 88px);
+  color:var(--chalk);font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  line-height:1.7;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:460px;margin:0 auto;padding:0 16px 44px;}
+.screen{display:none;}
+.screen.on{display:block;}
+h1,h2,h3{font-weight:900;line-height:1.25;margin:0;}
+p{margin:0 0 .8em;}
+.num{font-family:"Oswald",system-ui,sans-serif;font-weight:700;font-variant-numeric:tabular-nums;}
+
+.topbar{display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  padding:14px 16px 12px;max-width:460px;margin:0 auto;border-bottom:1px solid var(--line);}
+.topbar b{font-weight:900;font-size:15px;}
+.topbar span{font-size:12px;color:rgba(242,245,238,.65);}
+
+.hero{padding:26px 0 8px;}
+.hero h1{font-size:33px;}
+.hero .kicker{font-family:"Oswald",sans-serif;font-weight:500;font-size:12px;
+  letter-spacing:.22em;color:var(--amber);margin-bottom:10px;}
+.hero .lead{font-size:16px;color:rgba(242,245,238,.85);margin-top:10px;}
+.rules{list-style:none;padding:0;margin:22px 0 0;counter-reset:r;}
+.rules li{counter-increment:r;position:relative;padding:10px 0 10px 40px;
+  border-top:1px solid var(--line);font-size:14.5px;}
+.rules li:last-child{border-bottom:1px solid var(--line);}
+.rules li::before{content:counter(r);position:absolute;left:0;top:10px;
+  font-family:"Oswald",sans-serif;font-weight:700;font-size:17px;color:var(--amber);}
+.rules b{font-weight:900;}
+.note{font-size:11.5px;line-height:1.7;color:rgba(242,245,238,.55);margin-top:22px;}
+
+.btn{display:block;width:100%;padding:16px;border:0;border-radius:3px;cursor:pointer;
+  font-family:inherit;font-weight:900;font-size:16.5px;line-height:1;background:var(--amber);color:var(--ink);}
+.btn.ghost{background:transparent;color:var(--chalk);border:1.5px solid var(--line);}
+.btn.small{padding:11px;font-size:14px;}
+.btn:active{transform:translateY(1px);}
+.btn:disabled{opacity:.4;cursor:default;}
+.btn:focus-visible,select:focus-visible,input:focus-visible,.pick:focus-visible{outline:2.5px solid var(--amber);outline-offset:2px;}
+.btnrow{display:flex;gap:10px;margin-top:18px;}
+.btnrow .btn{flex:1;}
+.cta{margin-top:24px;}
+
+.meter{display:flex;align-items:center;justify-content:space-between;padding:16px 0 12px;}
+.meter .big{font-family:"Oswald",sans-serif;font-weight:700;font-size:15px;letter-spacing:.04em;}
+.meter .big i{font-style:normal;font-size:26px;color:var(--amber);}
+.passdots{display:flex;gap:5px;align-items:center;}
+.passdots span{width:9px;height:9px;border-radius:50%;background:var(--amber);}
+.passdots span.used{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(242,245,238,.4);}
+
+.card{background:var(--chalk);color:var(--ink);border-radius:4px;padding:16px 16px 14px;
+  box-shadow:0 14px 30px rgba(3,20,13,.35);}
+.card.enter{animation:deal .32s cubic-bezier(.2,.8,.3,1);}
+@keyframes deal{from{opacity:0;transform:translateY(14px) scale(.97);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:reduce){.card.enter{animation:none;}}
+.card .head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.pos{display:inline-block;background:var(--ink);color:var(--chalk);font-family:"Oswald",sans-serif;
+  font-weight:700;font-size:13px;padding:3px 9px;border-radius:2px;letter-spacing:.06em;}
+.pname{font-size:25px;font-weight:900;line-height:1.2;margin:7px 0 2px;}
+.pmeta{font-size:12.5px;color:#5C6E64;}
+.ovr{text-align:right;flex:none;}
+.ovr b{font-family:"Oswald",sans-serif;font-size:46px;font-weight:700;line-height:.9;display:block;}
+.ovr em{font-style:normal;font-size:10px;letter-spacing:.16em;color:#5C6E64;font-family:"Oswald",sans-serif;}
+.tag{display:inline-block;margin:8px 6px 0 0;font-size:11px;font-weight:700;padding:2px 8px;
+  border-radius:2px;background:rgba(8,33,26,.08);}
+.tag.gold{background:var(--amber);}
+.stats{margin-top:14px;border-top:1px solid rgba(8,33,26,.14);padding-top:12px;}
+.stat{display:grid;grid-template-columns:90px 1fr 30px;align-items:center;gap:9px;margin-bottom:6px;}
+.stat s{text-decoration:none;font-size:11.5px;color:#5C6E64;}
+.stat .bar{height:7px;background:rgba(8,33,26,.1);border-radius:1px;overflow:hidden;}
+.stat .bar i{display:block;height:100%;background:var(--ink);}
+.stat .bar i.hi{background:var(--amber);}
+.stat u{text-decoration:none;font-family:"Oswald",sans-serif;font-weight:700;font-size:13px;text-align:right;}
+.apt{margin-top:12px;border-top:1px solid rgba(8,33,26,.14);padding-top:10px;display:flex;flex-wrap:wrap;gap:5px;}
+.apt b{font-family:"Oswald",sans-serif;font-size:11.5px;font-weight:500;padding:2px 6px;
+  border-radius:2px;background:rgba(8,33,26,.07);color:#5C6E64;}
+.apt b.a3{background:var(--ink);color:var(--chalk);font-weight:700;}
+.apt b.a2{background:rgba(8,33,26,.2);color:var(--ink);}
+.choose{display:flex;gap:10px;margin-top:16px;}
+.choose .btn{flex:1;}
+.choose .btn.pass{flex:.8;}
+
+.roster{margin:18px 0 0;padding:0;list-style:none;}
+.roster li{display:grid;grid-template-columns:38px 1fr auto;gap:10px;align-items:center;
+  padding:8px 0;border-top:1px solid var(--line);font-size:14px;}
+.roster li:last-child{border-bottom:1px solid var(--line);}
+.roster .rp{font-family:"Oswald",sans-serif;font-size:11.5px;font-weight:700;color:var(--amber);}
+.roster .rv{font-family:"Oswald",sans-serif;font-weight:700;font-size:16px;}
+.roster small{display:block;font-size:11px;color:rgba(242,245,238,.55);line-height:1.4;}
+.roster li.rhead{padding:10px 0 3px;border-top:0;font-family:"Oswald",sans-serif;font-size:11px;
+  letter-spacing:.1em;color:rgba(242,245,238,.55);}
+.roster li.rhead .rp{color:var(--amber);font-size:12px;}
+.roster li.rhead+li{border-top:0;}
+
+.sec{margin-top:30px;}
+.sec h2{font-size:20px;margin-bottom:6px;}
+.sec .sub{font-size:13px;color:rgba(242,245,238,.65);margin-bottom:14px;}
+
+.pitchbox{position:relative;aspect-ratio:3/4;margin-top:14px;border:1.5px solid var(--line);
+  border-radius:3px;background:linear-gradient(0deg,rgba(0,0,0,.14),rgba(0,0,0,0));overflow:hidden;}
+.pitchbox::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--line);}
+.pitchbox::after{content:"";position:absolute;left:50%;top:50%;width:66px;height:66px;margin:-33px 0 0 -33px;
+  border:1px solid var(--line);border-radius:50%;}
+.slot{position:absolute;transform:translate(-50%,-50%);text-align:center;width:62px;}
+.slot .disc{width:32px;height:32px;margin:0 auto 3px;border-radius:50%;background:var(--chalk);color:var(--ink);
+  font-family:"Oswald",sans-serif;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.slot .disc.warn{background:var(--clay);color:var(--chalk);}
+.slot .nm{font-size:10px;line-height:1.25;text-shadow:0 1px 3px rgba(0,0,0,.6);}
+.slot .nm em{font-style:normal;display:block;font-size:9px;color:var(--amber);}
+
+label.fld{display:block;margin-top:14px;font-size:12.5px;color:rgba(242,245,238,.7);}
+input[type=text],select{width:100%;margin-top:5px;padding:11px 10px;border-radius:3px;
+  border:1.5px solid var(--line);background:rgba(0,0,0,.2);color:var(--chalk);font-family:inherit;font-size:15px;}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--amber) 50%),linear-gradient(135deg,var(--amber) 50%,transparent 50%);background-position:calc(100% - 17px) 20px,calc(100% - 12px) 20px;background-size:5px 5px;background-repeat:no-repeat;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.chip{padding:9px 13px;border-radius:3px;border:1.5px solid var(--line);background:transparent;color:var(--chalk);
+  font-family:"Oswald",sans-serif;font-weight:700;font-size:14px;cursor:pointer;}
+.chip.on{background:var(--amber);color:var(--ink);border-color:var(--amber);}
+.assign{display:grid;grid-template-columns:54px 1fr;gap:8px;align-items:center;margin-top:8px;}
+.assign .lab{font-family:"Oswald",sans-serif;font-weight:700;font-size:13px;color:var(--amber);}
+
+/* team profile bars */
+.prof{margin-top:16px;}
+.prof .row{display:grid;grid-template-columns:78px 1fr 34px;gap:9px;align-items:center;margin-bottom:6px;}
+.prof .row s{text-decoration:none;font-size:12px;color:rgba(242,245,238,.7);}
+.prof .bar{height:8px;background:rgba(0,0,0,.28);border-radius:1px;overflow:hidden;}
+.prof .bar i{display:block;height:100%;background:var(--amber);}
+.prof .row u{text-decoration:none;font-family:"Oswald",sans-serif;font-weight:700;font-size:13px;text-align:right;}
+.tacdesc{font-size:12.5px;color:rgba(242,245,238,.7);margin-top:8px;line-height:1.6;}
+
+.scorebar{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0 4px;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;}
+.scorebar div{text-align:center;}
+.scorebar b{display:block;font-family:"Oswald",sans-serif;font-weight:700;font-size:23px;line-height:1.1;}
+.scorebar s{text-decoration:none;font-size:10.5px;color:rgba(242,245,238,.6);}
+.tstats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+.tstats div{background:rgba(0,0,0,.2);border-radius:3px;padding:10px 8px;text-align:center;}
+.tstats b{display:block;font-family:"Oswald",sans-serif;font-weight:700;font-size:20px;line-height:1.15;}
+.tstats s{text-decoration:none;font-size:10.5px;color:rgba(242,245,238,.62);}
+
+.log{margin-top:6px;max-height:46vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.log .row{display:grid;grid-template-columns:46px 1fr 50px;gap:8px;align-items:center;
+  padding:7px 0 2px;font-size:13.5px;}
+.log .rd{font-family:"Oswald",sans-serif;font-size:11px;color:rgba(242,245,238,.55);}
+.log .sc{font-family:"Oswald",sans-serif;font-weight:700;font-size:15px;text-align:right;}
+.log .w{color:var(--amber);}
+.log .l{color:#F09A8D;}
+.log .det{font-size:11px;color:rgba(242,245,238,.5);padding:0 0 7px 54px;
+  border-bottom:1px solid rgba(242,245,238,.12);font-family:"Oswald",sans-serif;letter-spacing:.02em;}
+.log .ev{padding:7px 10px;margin:5px 0;font-size:12.5px;border-left:3px solid var(--amber);
+  background:rgba(0,0,0,.2);border-radius:0 3px 3px 0;}
+.log .ev.bad{border-left-color:var(--clay);}
+
+.tbl{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px;}
+.tbl th{font-family:"Oswald",sans-serif;font-weight:500;font-size:10.5px;letter-spacing:.06em;
+  color:rgba(242,245,238,.6);text-align:right;padding:5px 4px;border-bottom:1px solid var(--line);white-space:nowrap;}
+.tbl th:nth-child(2){text-align:left;}
+.tbl td{padding:6px 4px;text-align:right;border-bottom:1px solid rgba(242,245,238,.12);white-space:nowrap;}
+.tbl td:nth-child(2){text-align:left;font-size:13px;white-space:normal;max-width:116px;line-height:1.35;}
+.tbl tr.me td{background:rgba(255,194,26,.16);font-weight:700;}
+.tbl tr.up td:first-child{color:var(--amber);}
+.tbl tr.po td:first-child{color:#8FD3FF;}
+.tbl tr.down td:first-child{color:#F09A8D;}
+.overflow{overflow-x:auto;}
+.stars{position:relative;display:inline-block;font-size:11px;letter-spacing:.5px;
+  color:rgba(242,245,238,.22);line-height:1;vertical-align:-1px;}
+.stars::before{content:"★★★★★";}
+.stars i{position:absolute;left:0;top:0;overflow:hidden;white-space:nowrap;color:var(--amber);}
+.stars i::before{content:"★★★★★";}
+.stv{font-family:"Oswald",sans-serif;font-weight:700;font-size:10.5px;color:rgba(242,245,238,.7);margin-left:4px;}
+
+.verdict{margin-top:20px;background:var(--chalk);color:var(--ink);border-radius:4px;padding:18px;}
+.verdict .kicker{font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:.2em;color:#5C6E64;}
+.verdict h2{font-size:29px;margin:4px 0 6px;}
+.verdict p{font-size:13.5px;color:#41544A;margin:0;}
+.verdict.gold{background:var(--amber);}
+.shareout{margin-top:12px;font-size:12.5px;white-space:pre-wrap;background:rgba(0,0,0,.25);
+  border:1px solid var(--line);border-radius:3px;padding:12px;line-height:1.6;}
+
+.pomatch{border-top:1px solid var(--line);padding:13px 0;}
+.pomatch:last-child{border-bottom:1px solid var(--line);}
+.pomatch h3{font-family:"Oswald",sans-serif;font-weight:500;font-size:11px;letter-spacing:.14em;
+  color:var(--amber);margin:0 0 7px;}
+.pomatch .line{display:grid;grid-template-columns:1fr 62px 1fr;gap:8px;align-items:center;font-size:14px;}
+.pomatch .line .r{text-align:right;}
+.pomatch .sc{font-family:"Oswald",sans-serif;font-weight:700;font-size:21px;text-align:center;}
+.pomatch .rk{font-family:"Oswald",sans-serif;font-size:10.5px;color:rgba(242,245,238,.55);display:block;}
+.pomatch .win{font-weight:900;color:var(--amber);}
+.pomatch .note{font-size:12px;color:rgba(242,245,238,.62);margin-top:7px;}
+
+.cand{margin-top:16px;}
+.cand .card{border:3px solid transparent;}
+.cand.picked .card{border-color:var(--amber);box-shadow:0 0 0 3px rgba(255,194,26,.28),0 14px 30px rgba(3,20,13,.35);}
+.cand .btn{margin-top:10px;}
+.picklist{margin:14px 0 0;padding:0;list-style:none;}
+.pick{display:grid;grid-template-columns:22px 34px 1fr auto;gap:9px;align-items:center;width:100%;
+  padding:10px 4px;border:0;border-top:1px solid var(--line);background:transparent;color:var(--chalk);
+  font-family:inherit;font-size:14px;text-align:left;cursor:pointer;}
+.picklist li:last-child .pick{border-bottom:1px solid var(--line);}
+.pick .box{width:18px;height:18px;border-radius:2px;border:1.5px solid var(--line);}
+.pick.on .box{background:var(--clay);border-color:var(--clay);}
+.pick.on{background:rgba(208,65,44,.14);}
+.pick .rp{font-family:"Oswald",sans-serif;font-size:11.5px;font-weight:700;color:var(--amber);}
+.pick .rv{font-family:"Oswald",sans-serif;font-weight:700;font-size:16px;}
+.pick small{display:block;font-size:11px;color:rgba(242,245,238,.55);line-height:1.4;}
+.counter{font-family:"Oswald",sans-serif;font-weight:700;font-size:14px;color:var(--amber);margin-top:14px;}
+.growth{margin:12px 0 0;padding:0;list-style:none;font-size:13px;}
+.growth li{padding:6px 0;border-bottom:1px solid rgba(242,245,238,.12);}
+.growth b{font-weight:900;}
+.growth .up{color:var(--amber);}
+.growth .dn{color:#F09A8D;}
+footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:rgba(242,245,238,.5);}
+.log .row{border-bottom:1px solid rgba(242,245,238,.12);}
+.log .mst{display:block;font-family:"Oswald",sans-serif;font-size:10px;
+  color:rgba(242,245,238,.48);letter-spacing:.02em;line-height:1.5;}
+.roster li.rhead{padding:10px 0 3px;border-top:0;font-family:"Oswald",sans-serif;font-size:11px;
+  letter-spacing:.1em;color:rgba(242,245,238,.55);}
+.roster li.rhead .rp{color:var(--amber);font-size:12px;}
+.roster li.rhead+li{border-top:0;}
+.gtitle{font-family:"Oswald",sans-serif;font-weight:700;font-size:46px;line-height:.98;letter-spacing:.01em;}
+.subh{font-size:15px;font-weight:900;margin:22px 0 0;}
+.offer{background:rgba(0,0,0,.22);border-radius:4px;padding:14px;margin-top:12px;border-left:3px solid var(--amber);}
+.offer.ov{border-left-color:#8FD3FF;}
+.offer .who{font-size:15px;font-weight:900;}
+.offer .who small{display:block;font-size:11.5px;font-weight:400;color:rgba(242,245,238,.6);}
+.offer .from{font-size:13px;margin:6px 0 2px;}
+.offer .lv{font-family:"Oswald",sans-serif;font-weight:700;font-size:13px;}
+.offer .lv.hi{color:var(--amber);} .offer .lv.mid{color:var(--chalk);} .offer .lv.lo{color:#F09A8D;}
+.offer .res{margin-top:8px;font-size:13px;font-weight:700;}
+.cuprow{display:grid;grid-template-columns:70px 1fr auto;gap:8px;align-items:center;padding:7px 0;
+  border-bottom:1px solid rgba(242,245,238,.12);font-size:13px;}
+.cuprow .rd{font-family:"Oswald",sans-serif;font-size:11px;color:rgba(242,245,238,.55);}
+.cuprow .sc{font-family:"Oswald",sans-serif;font-weight:700;}
+.cupchamp{margin-top:12px;font-size:14px;}
+.cupchamp b{color:var(--amber);font-weight:900;}
+.log .row.cup .rd{color:#8FD3FF;}
+.roster li{border-top:0;}
+.roster li:last-child{border-bottom:0;}
+.roster li:not(.rhead){padding:6px 0;}
+.roster li.rhead{border-top:1px solid var(--line);margin-top:6px;padding:12px 0 2px;}
+.roster li.rhead:first-child{border-top:0;margin-top:0;padding-top:2px;}
+.roster li.rhead+li{border-top:0;}
+.picklist .pick{border-top:0;padding:8px 4px;}
+.picklist li:last-child .pick{border-bottom:0;}
+.picklist li.phead{border-top:1px solid var(--line);margin-top:6px;padding:12px 4px 2px;
+  font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:.1em;color:rgba(242,245,238,.55);}
+.picklist li.phead:first-child{border-top:0;margin-top:0;padding-top:2px;}
+.picklist li.insum+li.phead{border-top:1px solid var(--line);}
+.picklist li.phead .rp{color:var(--amber);font-size:12px;font-weight:700;margin-right:10px;}
+.picklist li.inrow{display:grid;grid-template-columns:22px 34px 1fr auto;gap:9px;align-items:center;
+  padding:8px 4px;background:rgba(255,194,26,.12);border-left:3px solid var(--amber);margin:2px 0;font-size:14px;}
+.picklist li.inrow .rp{font-family:"Oswald",sans-serif;font-size:11.5px;font-weight:700;color:var(--amber);}
+.picklist li.inrow .rv{font-family:"Oswald",sans-serif;font-weight:700;font-size:16px;color:var(--amber);}
+.picklist li.inrow small{display:block;font-size:11px;color:rgba(242,245,238,.6);line-height:1.4;}
+.inbadge{font-family:"Oswald",sans-serif;font-size:10px;font-weight:700;color:var(--ink);background:var(--amber);
+  border-radius:2px;text-align:center;padding:1px 3px;line-height:1.5;}
+.picklist li.insum{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:4px 0 10px;}
+.inchip{font-size:12px;border:1px solid rgba(255,194,26,.5);border-radius:3px;padding:3px 7px;}
+.inchip b{font-family:"Oswald",sans-serif;color:var(--amber);}
+.passdots span{width:8px;height:8px;}
+.passdots{gap:4px;}
+.cardimg{display:block;width:100%;margin-top:12px;border-radius:4px;border:1px solid var(--line);}
+</style>
+</head>
+<body>
+<div class="topbar"><b>Football Champion Road J</b><span id="topstate">J3からの挑戦</span></div>
+<div class="wrap">
+
+<section class="screen on" id="s-title">
+  <div class="hero">
+    <div class="kicker">FCRJ</div>
+    <h1 class="gtitle">Football<br>Champion<br>Road J</h1>
+    <p class="lead" style="font-weight:900;color:var(--chalk)">J3から始めて、J1優勝まで行けるか。</p>
+    <p class="lead">ランダムに現れる選手を取るか、見送るか。20人を集め、布陣と戦術を決めて昇格を目指します。</p>
+  </div>
+  <ol class="rules">
+    <li><b>架空の選手</b>がポジション関係なく完全ランダムで1人ずつ登場</li>
+    <li>できるのは「<b>取る</b>」か「<b>見送る</b>」だけ</li>
+    <li>一気に<b>20人</b>（スタメン11人＋控え9人）を集める。<b>見送りは10回</b>まで</li>
+    <li><b>15のフォーメーション</b>と<b>5つの戦術</b>を選び、組み合わせで試合内容が変わる</li>
+    <li>J3は21クラブ・40節、J2とJ1は20クラブ・38節。上位2クラブが<b>自動昇格</b>、<b>3〜6位はプレーオフ</b></li>
+    <li>シーズン中に<b>天皇杯</b>と<b>Jリーグカップ</b>も並行して戦う</li>
+    <li>オフには<b>引退</b>や<b>引き抜き</b>が起き、<b>獲得候補</b>から補強する。毎年1歳ずつ年を取る</li>
+  </ol>
+  <button class="btn cta" id="btn-start">J3から始める</button>
+  <p class="note">クラブ名は実在のクラブをもじった架空の名前で、実在のクラブ・団体とは一切関係ありません。選手名・能力値・成績・順位もすべてこのゲームのために作った架空のもので、実在の選手・試合とは関係ありません。</p>
+</section>
+
+<section class="screen" id="s-draft">
+  <div class="meter">
+    <div class="big" id="d-count">獲得 <i>0</i> / 20</div>
+    <div class="passdots" id="d-pass"></div>
+  </div>
+  <div id="d-card"></div>
+  <div class="choose">
+    <button class="btn ghost pass" id="btn-pass">見送る</button>
+    <button class="btn" id="btn-take">獲得する</button>
+  </div>
+  <ul class="roster" id="d-roster"></ul>
+</section>
+
+<section class="screen" id="s-squad">
+  <div class="sec">
+    <h2 id="sq-title">20人、集まりました</h2>
+    <p class="sub" id="sq-sub">つぎは控えを7人集めます。</p>
+    <ul class="roster" id="sq-roster"></ul>
+    <button class="btn cta" id="btn-sqnext">控えを集める</button>
+  </div>
+</section>
+
+<section class="screen" id="s-form">
+  <div class="sec">
+    <h2 id="f-title">布陣と戦術</h2>
+    <p class="sub">フォーメーションと戦術は別々に設定します。組み合わせで試合の中身が変わります。</p>
+    <label class="fld">フォーメーション<select id="f-form"></select></label>
+    <label class="fld">基本戦術<select id="f-tac"></select></label>
+    <div class="tacdesc" id="f-tacdesc"></div>
+    <div class="prof" id="f-prof"></div>
+    <div class="pitchbox" id="f-pitch"></div>
+    <div class="btnrow"><button class="btn ghost small" id="btn-auto">おまかせ配置</button></div>
+    <div id="f-assign"></div>
+    <button class="btn cta" id="btn-fdone">この布陣で開幕へ</button>
+  </div>
+</section>
+
+<section class="screen" id="s-setup">
+  <div class="sec">
+    <h2>クラブ名を決める</h2>
+    <p class="sub">J3の21クラブ・40節でシーズンが始まります。</p>
+    <label class="fld">クラブ名<input type="text" id="i-team" maxlength="14" value="あなたのクラブ" autocomplete="off"></label>
+    <button class="btn cta" id="btn-kickoff">開幕</button>
+  </div>
+</section>
+
+<section class="screen" id="s-season">
+  <div class="sec">
+    <h2 id="se-title">シーズン</h2>
+    <div class="scorebar">
+      <div><b id="se-pts">0</b><s>勝点</s></div>
+      <div><b id="se-rec">0-0-0</b><s>勝分敗</s></div>
+      <div><b id="se-gd">0</b><s>得失点</s></div>
+      <div><b id="se-rank">–</b><s>順位</s></div>
+    </div>
+    <div class="log" id="se-log"></div>
+    <button class="btn cta" id="btn-skip">最後まで飛ばす</button>
+  </div>
+</section>
+
+<section class="screen" id="s-po">
+  <div class="sec">
+    <h2 id="po-title">昇格プレーオフ</h2>
+    <p class="sub">準決勝・決勝とも一発勝負。上位クラブのホームで行い、90分で引き分けなら年間順位が上のクラブが勝ち上がります。</p>
+    <div id="po-log"></div>
+    <button class="btn cta" id="btn-po-next" style="display:none">結果を見る</button>
+  </div>
+</section>
+
+<section class="screen" id="s-result">
+  <div class="verdict" id="r-verdict"></div>
+  <div class="sec">
+    <h2>チーム成績</h2>
+    <p class="sub" id="r-setup"></p>
+    <div class="tstats" id="r-tstats"></div>
+  </div>
+  <div class="sec">
+    <h2 id="r-tabletitle">順位表</h2>
+    <div class="chips" id="r-divtabs"></div>
+    <div class="overflow"><table class="tbl" id="r-table"></table></div>
+    <h3 class="subh" id="r-tsdivtitle">チーム成績</h3>
+    <div class="overflow"><table class="tbl" id="r-tsdiv"></table></div>
+  </div>
+  <div class="sec">
+    <h2>カップ戦</h2>
+    <div class="chips" id="r-cuptabs"></div>
+    <div id="r-cup"></div>
+  </div>
+  <div class="sec">
+    <h2 id="r-potitle">昇格プレーオフ</h2>
+    <div id="r-po"></div>
+  </div>
+  <div class="sec">
+    <h2 id="r-sctitle">得点ランキング</h2>
+    <div class="overflow"><table class="tbl" id="r-scorers"></table></div>
+  </div>
+  <div class="sec">
+    <h2>選手成績</h2>
+    <div class="chips" id="r-sqtabs"></div>
+    <div class="overflow"><table class="tbl" id="r-squad"></table></div>
+  </div>
+  <div class="sec">
+    <h2>試合結果</h2>
+    <label class="fld" id="r-logsel" style="display:none">シーズン<select id="r-logyear"></select></label>
+    <div class="log" id="r-log" style="max-height:52vh"></div>
+  </div>
+  <div class="sec"><h2>クラブの歩み</h2><div class="overflow"><table class="tbl" id="r-history"></table></div></div>
+  <button class="btn cta" id="btn-off">オフシーズンへ</button>
+  <div class="sec">
+    <h2>結果を残す</h2>
+    <img id="r-card" class="cardimg" alt="今季の結果カード">
+    <div class="btnrow" style="margin-top:14px">
+      <button class="btn" id="btn-shareimg">画像付きでシェア</button>
+      <button class="btn ghost" id="btn-saveimg">画像を保存</button>
+    </div>
+    <p class="sub" id="r-sharehint" style="margin:8px 0 0"></p>
+    <div class="shareout" id="r-share"></div>
+    <div class="btnrow">
+      <button class="btn small" id="btn-copy">テキストをコピー</button>
+      <a class="btn ghost small" id="btn-x" style="text-align:center;text-decoration:none" target="_blank" rel="noopener">Xでシェア</a>
+    </div>
+    <button class="btn ghost cta" id="btn-again">最初からやり直す</button>
+  </div>
+  <footer>Football Champion Road J ／ クラブ名・大学名は実在のものをもじった架空の名前です。選手名・能力値・試合結果・順位もすべてこのゲームによる架空のもので、実在のリーグ・クラブ・選手・団体とは関係ありません。</footer>
+</section>
+
+<section class="screen" id="s-off">
+  <div class="sec">
+    <h2 id="o-title">オフシーズン</h2>
+    <p class="sub" id="o-sub">1年が過ぎ、全員が1歳年を取りました。</p>
+    <ul class="growth" id="o-growth"></ul>
+  </div>
+  <div class="sec" id="o-retire-sec" style="display:none">
+    <h2>引退</h2>
+    <ul class="growth" id="o-retire"></ul>
+  </div>
+  <div class="sec" id="o-offer-sec" style="display:none">
+    <h2>移籍オファー</h2>
+    <p class="sub" id="o-offer-sub">残留交渉をするか、送り出すかを選びます。気持ちよく送り出すと、見返りで獲得候補の質が上がります。交渉に失敗すると見返りは半分です。</p>
+    <div id="o-offers"></div>
+  </div>
+  <div class="sec">
+    <h2>現有戦力</h2>
+    <p class="sub" id="o-squad-sub">この顔ぶれを見ながら候補を選びます。</p>
+    <ul class="roster" id="o-squad"></ul>
+  </div>
+  <div class="sec" id="o-cand-sec">
+    <h2>獲得候補</h2>
+    <p class="sub" id="o-cand-sub">3人まで獲れます。もう一度タップすれば取り消せます。</p>
+    <div id="o-cands"></div>
+    <div class="counter" id="o-count">獲得 0 / 3</div>
+    <button class="btn cta" id="btn-tolist">決定</button>
+  </div>
+</section>
+
+<section class="screen" id="s-release">
+  <div class="sec">
+    <h2>放出する選手を選ぶ</h2>
+    <p class="sub" id="rl-sub">獲得した人数と同じだけ放出します。</p>
+    <ul class="picklist" id="rl-list"></ul>
+    <div class="counter" id="rl-count">放出 0 / 0</div>
+    <button class="btn cta" id="btn-release">新シーズンへ</button>
+    <button class="btn ghost small" id="btn-rlback" style="margin-top:10px">獲得を選び直す</button>
+  </div>
+</section>
+
+</div>
+<script>
+
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var rnd=function(n){return Math.floor(Math.random()*n);};
+var pick=function(a){return a[rnd(a.length)];};
+var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
+function gauss(){var u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var r=rnd(i+1),t=a[i];a[i]=a[r];a[r]=t;}return a;}
+function pois(l){if(l<=0)return 0;if(l>20)return Math.max(0,Math.round(l+gauss()*Math.sqrt(l)));var L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random();}while(p>L);return k-1;}
+
+/* ============ 名前・クラブ ============ */
+var SEI='佐藤 鈴木 高橋 田中 渡辺 伊藤 山本 中村 小林 加藤 吉田 山田 佐々木 山口 松本 井上 木村 斎藤 清水 山崎 池田 橋本 石川 中島 前田 藤田 後藤 岡田 長谷川 村上 近藤 石井 坂本 遠藤 青木 藤井 西村 福田 太田 宮崎 大塚 平野 柴田 神谷 相原 日高 瀬戸 三宅 千葉 大西 小野 南 堀 森本 矢野 中西 杉山 本田'.split(' ');
+var MEI='大翔 蓮 悠真 陽斗 湊 颯太 樹 陸 朝陽 碧 蒼真 歩夢 将真 隼人 龍之介 匠 拓海 海斗 楓馬 瑛太 智也 圭介 慎吾 直樹 涼平 恭平 亮太 健太 雄大 達也 和也 翔 祐樹 悠斗 誠 遼 駿 航平 大貴 祐介 弘樹 侑真 千尋 一馬 奏 蒼士 湧斗 壮真 玲央 颯真'.split(' ');
+var GAI='ルーカス・メンデス,アドリアーノ,ジョアン・ペレイラ,マテウス・シウバ,カルロス・ビエイラ,ディエゴ・ロハス,パトリック・オコエ,イヴァン・ペトロヴィッチ,サンドロ,ラファエル・ドゥアルテ,ミロシュ・ヤンコヴィッチ,キム・ドヒョン,パク・ジュンソ,エドゥアルド,ブルーノ・コスタ,ティアゴ・ナシメント,アレクサンダル・ミハイロフ,ジョナタン・ムーア,ロドリゴ・アルベス,ファビオ・モラエス,ヴィクトル・ソコロフ,チョン・テウ,アンドレス・キロガ,マルコ・ベルナルディ'.split(',');
+var LEAGUE={
+ 1:'鹿島アンドラーズ:4.6,水戸ホーリーホクッ:3.4,浦和ウッズ:4.5,ジェフユナイデッド千葉:3.5,柏レイソロ:4.2,東京FC:4.1,東京ベルディ:3.7,町田ゼルビヤ:4.3,川崎フロンタレ:4.5,横浜F･マレノス:4.4,清水エスパレス:3.8,名古屋グランペス:4.1,京都サンバ:3.9,ガンバレ大阪:4.2,セレブ大阪:4.0,ビッセル神戸:4.6,ファンタジーノ岡山:3.6,サンフレンチ広島:4.6,アジスタ福岡:3.8,V･レーメン長崎:3.5',
+ 2:'北海道コンサドール札幌:3.4,バンラーメン八戸:2.5,ペカルタ仙台:3.1,ブラブラリッツ秋田:2.7,モンテデオ山形:2.9,FCいわき:2.8,栃木シテイ:2.6,RB大宮アルディジャー:3.1,FC横浜:3.3,湘南ベルマーレン:3.4,バンホーレ甲府:2.9,新潟アルビレックス:3.4,カータレ富山:2.5,ジビロ磐田:3.3,藤枝MEFC:2.7,徳島ボルテス:2.9,今治FC:2.7,ザガン鳥栖:3.2,大分トリニター:3.0,テゲバジャーレ宮崎:2.5',
+ 3:'福島ユナイデッド:1.8,SC栃木:2.1,ザスバ群馬:2.0,相模原SC:1.9,松本山田FC:2.3,AC長野パロセイル:1.9,ツヨーゲン金沢:2.2,岐阜FC:2.1,レレレイ滋賀:1.6,大阪FC:1.9,クラブ奈良:1.8,ガイナレー鳥取:1.8,レノハ山口:2.3,カマターマレ讃岐:1.7,FC愛媛:2.3,高知ユナイデッド:1.7,ギラギラバンツ北九州:2.1,ロワッソ熊本:2.4,鹿児島ユナイデッド:2.2,琉球FC:2.0'};
+var POOLDEF='いわてグルシア盛岡:1.6,横浜Y.S.C.C.:1.4,SV沖縄:1.3,アスルクロロ沼津:1.6,鈴鹿ポイントゲッツ:1.2,ビアテン三重:1.3,ラインデンワ青森:1.2,クレアソン新宿:1.3,SC南葛:1.4,FC23東京:1.1,FCティアラ枚方:1.1,おいでやす京都:1.1,ベルスパ大分:1.2,刈谷FC:1.0,コバントーレ女川:1.0,FC図南･前橋:1.0,FC武蔵野シティ:1.0,FC浜松シティ:1.1,バンズ市原:1.2,ブリオデッカ浦安･市川:1.3';
+var UNIVDEF='ちくば大学:2.2,明示大学:2.1,流通センター大学:2.0,方正大学:1.9,順転堂大学:1.8,松蔭横浜大学:1.9,西洋大学:1.8,酷使感大学:1.7,粉澤大学:1.7,関西学園大学:1.9';
+var HANEDADEF='HanedaFC:3.0';
+var OVERSEAS='SVノルトハーフェン（ドイツ）,FCリヴァーデイル（イングランド）,スポルティング・マレ（ポルトガル）,CDアルバ・ノルテ（スペイン）,KVヴェステルダム（ベルギー）,FCアムステルランド（オランダ）,ACモンテヴェルデ（イタリア）,RCサン・ベルナール（フランス）'.split(',');
+var DRAFT_BONUS=-3;
+function parseDef(str){return str.split(',').map(function(x){var i=x.lastIndexOf(':');return {name:x.slice(0,i),star:parseFloat(x.slice(i+1))};});}
+function coreOf(star){return 56+6*star;}
+
+/* ============ 能力値 ============ */
+var AB=['ATK','DEF','PHY','SPD','STA','DRI','POS','JDG'];
+var ABJ={ATK:'攻撃',DEF:'守備',PHY:'フィジカル',SPD:'スピード',STA:'スタミナ',DRI:'ドリブル',POS:'ポジショニング',JDG:'判断力'};
+var POSJ={GK:'GK',CB:'CB',SB:'SB',DM:'DM',CM:'CM',OM:'OM',WG:'WG',CF:'CF'};
+var POSNAME={GK:'ゴールキーパー',CB:'センターバック',SB:'サイドバック',DM:'ボランチ',CM:'セントラルMF',OM:'トップ下',WG:'ウイング',CF:'センターFW'};
+var PORD={GK:0,CB:1,SB:2,DM:3,CM:4,OM:5,WG:6,CF:7};
+var W={
+ GK:{ATK:0,DEF:.34,PHY:.16,SPD:.00,STA:.00,DRI:.00,POS:.24,JDG:.26},
+ CB:{ATK:.00,DEF:.34,PHY:.22,SPD:.09,STA:.05,DRI:.00,POS:.18,JDG:.12},
+ SB:{ATK:.05,DEF:.22,PHY:.07,SPD:.20,STA:.16,DRI:.12,POS:.13,JDG:.05},
+ DM:{ATK:.05,DEF:.26,PHY:.13,SPD:.04,STA:.15,DRI:.04,POS:.17,JDG:.16},
+ CM:{ATK:.16,DEF:.08,PHY:.04,SPD:.04,STA:.16,DRI:.12,POS:.18,JDG:.22},
+ OM:{ATK:.22,DEF:.02,PHY:.04,SPD:.10,STA:.06,DRI:.20,POS:.16,JDG:.20},
+ WG:{ATK:.20,DEF:.02,PHY:.02,SPD:.24,STA:.10,DRI:.24,POS:.10,JDG:.08},
+ CF:{ATK:.34,DEF:.00,PHY:.10,SPD:.14,STA:.02,DRI:.12,POS:.20,JDG:.08}};
+var D={
+ GK:{ATK:-34,DEF:6,PHY:2,SPD:-14,STA:-8,DRI:-26,POS:8,JDG:6},
+ CB:{ATK:-18,DEF:14,PHY:12,SPD:-5,STA:0,DRI:-14,POS:8,JDG:4},
+ SB:{ATK:-6,DEF:6,PHY:-3,SPD:11,STA:8,DRI:3,POS:2,JDG:0},
+ DM:{ATK:-9,DEF:10,PHY:7,SPD:-4,STA:6,DRI:-4,POS:6,JDG:6},
+ CM:{ATK:2,DEF:1,PHY:-1,SPD:-1,STA:8,DRI:4,POS:5,JDG:9},
+ OM:{ATK:9,DEF:-12,PHY:-7,SPD:3,STA:-2,DRI:11,POS:4,JDG:8},
+ WG:{ATK:6,DEF:-13,PHY:-8,SPD:14,STA:2,DRI:13,POS:0,JDG:0},
+ CF:{ATK:15,DEF:-16,PHY:6,SPD:5,STA:-3,DRI:2,POS:8,JDG:1}};
+var APT={
+ GK:{GK:3},CB:{CB:3,SB:2,DM:2,CM:1,CF:1},SB:{SB:3,CB:2,WG:2,DM:1,CM:1,OM:1},
+ DM:{DM:3,CM:2,CB:2,SB:1,OM:1},CM:{CM:3,DM:2,OM:2,SB:1,WG:1,CF:1},
+ OM:{OM:3,CM:2,WG:2,CF:2,DM:1},WG:{WG:3,OM:2,CF:2,SB:2,CM:1},CF:{CF:3,OM:2,WG:2,CM:1}};
+var APTM=[.80,.90,.96,1.0];
+function apt(nat,slot){var m=APT[nat]||{};return m[slot]||0;}
+function aptMul(nat,slot){
+ if(slot==='GK'&&nat!=='GK')return .52;
+ return APTM[apt(nat,slot)];
+}
+function ab(p,k){return clamp(p.st[k]+p.mod+(p.temp||0),1,99);}
+function ovrFor(p,slot){var w=W[slot],s=0;for(var k in w)s+=w[k]*ab(p,k);return Math.round(s);}
+function aptP(p,slot){return Math.max(apt(p.pos,slot),p.pos2?apt(p.pos2,slot):0);}
+function aptMulP(p,slot){
+ if(slot==='GK'&&p.pos!=='GK')return .52;
+ return APTM[aptP(p,slot)];
+}
+function posLabel(p){return POSJ[p.pos]+(p.pos2?'/'+POSJ[p.pos2]:'');}
+function eff(p,slot){return ovrFor(p,slot)*aptMulP(p,slot);}
+
+/* ============ フォーメーション ============ */
+var BANDS={
+ '4-4-2':[['SB','CB','CB','SB'],['WG','CM','CM','WG'],['CF','CF']],
+ '4-3-3':[['SB','CB','CB','SB'],['CM','DM','CM'],['WG','CF','WG']],
+ '4-2-3-1':[['SB','CB','CB','SB'],['DM','DM'],['WG','OM','WG'],['CF']],
+ '4-4-1-1':[['SB','CB','CB','SB'],['WG','CM','CM','WG'],['OM'],['CF']],
+ '4-3-1-2':[['SB','CB','CB','SB'],['CM','DM','CM'],['OM'],['CF','CF']],
+ '4-1-4-1':[['SB','CB','CB','SB'],['DM'],['WG','CM','CM','WG'],['CF']],
+ '4-5-1':[['SB','CB','CB','SB'],['WG','CM','CM','CM','WG'],['CF']],
+ '3-4-3':[['CB','CB','CB'],['SB','CM','CM','SB'],['WG','CF','WG']],
+ '3-5-2':[['CB','CB','CB'],['SB','CM','CM','CM','SB'],['CF','CF']],
+ '3-4-2-1':[['CB','CB','CB'],['SB','CM','CM','SB'],['OM','OM'],['CF']],
+ '5-3-2':[['SB','CB','CB','CB','SB'],['CM','CM','CM'],['CF','CF']],
+ '5-4-1':[['SB','CB','CB','CB','SB'],['WG','CM','CM','WG'],['CF']],
+ '5-2-3':[['SB','CB','CB','CB','SB'],['CM','CM'],['WG','CF','WG']],
+ '4-2-2-2':[['SB','CB','CB','SB'],['DM','DM'],['WG','WG'],['CF','CF']],
+ '4-3-2-1':[['SB','CB','CB','SB'],['CM','DM','CM'],['OM','OM'],['CF']]};
+var XS={1:[50],2:[36,64],3:[22,50,78],4:[12,37,63,88],5:[8,28,50,72,92]};
+var YS={3:[77,50,21],4:[79,59,38,17]};
+var FORM={};
+(function(){
+ for(var k in BANDS){
+  var bands=BANDS[k],slots=[['GK',50,92]],ys=YS[bands.length]||YS[3],i,j;
+  for(i=0;i<bands.length;i++){
+   var b=bands[i],xs=XS[b.length];
+   for(j=0;j<b.length;j++)slots.push([b[j],xs[j],ys[i]]);
+  }
+  var c={CB:0,SB:0,DM:0,CM:0,OM:0,WG:0,CF:0};
+  for(i=1;i<slots.length;i++)c[slots[i][0]]++;
+  var nDF=c.CB+c.SB,nMF=c.DM+c.CM+c.OM,nFW=c.WG+c.CF;
+  FORM[k]={slots:slots,c:c,prof:{
+   atk:clamp(Math.round(50+(nFW-3)*11+c.OM*5+c.WG*2),20,95),
+   def:clamp(Math.round(50+(nDF-4)*10+c.DM*6),20,95),
+   mid:clamp(Math.round(50+(nMF-4)*11+c.CM*3),20,95),
+   side:clamp(Math.round(46+c.WG*11+c.SB*6),20,95),
+   cnt:clamp(Math.round(50+(nDF-4)*7+nFW*4+c.WG*3-c.CM*2),20,95),
+   pos:clamp(Math.round(50+(nMF-4)*10+c.CM*3-nFW*2),20,95),
+   prs:clamp(Math.round(50+(nMF-4)*6+nFW*5+c.OM*4-c.CB*3),20,95)}};
+ }
+})();
+var FKEYS=Object.keys(FORM);
+var PROFJ={atk:'攻撃力',def:'守備力',mid:'中盤支配',side:'サイド攻撃',cnt:'カウンター',pos:'ポゼッション',prs:'プレス'};
+function fm(v){return .85+v/100*.30;}
+
+/* ============ 戦術 ============ */
+var TAC={
+ poss:{name:'ポゼッション',desc:'ボールを保持し短いパスで組み立てる。支配率とパス数が伸び、走行距離も増えるがスプリントは減る。',
+  poss:1.12,pass:1.18,run:1.05,chance:1.04,sprint:.90,drib:1.00,cross:.95,duel:.97,def:1.00,cs:1.00},
+ sct:{name:'ショートカウンター',desc:'前線・中盤で奪って素早く攻める。スプリントとドリブルが増え、守備時の運動量も上がる。',
+  poss:.98,pass:.99,run:1.08,chance:1.08,sprint:1.13,drib:1.09,cross:1.00,duel:1.04,def:1.00,cs:1.00},
+ lct:{name:'ロングカウンター',desc:'守備を固めて奪ってから一気に。支配率とパス数は落ちるが、クリーンシートとカウンターに強い。',
+  poss:.84,pass:.84,run:.98,chance:1.06,sprint:1.15,drib:.98,cross:.93,duel:1.06,def:1.07,cs:1.14},
+ side:{name:'サイドアタック',desc:'サイドを広く使う。クロスとドリブル、サイドの選手の走行距離とアシスト機会が増える。',
+  poss:1.01,pass:1.05,run:1.05,chance:1.05,sprint:1.09,drib:1.11,cross:1.50,duel:1.00,def:1.00,cs:1.00},
+ lb:{name:'ロングボール',desc:'前線へ長いボールを送る。デュエルとフィジカル・スピードの影響が増し、支配率とパス数は落ちる。',
+  poss:.82,pass:.76,run:.96,chance:1.05,sprint:1.05,drib:.92,cross:1.10,duel:1.32,def:1.00,cs:1.00,phy:1.18}};
+var TKEYS=Object.keys(TAC);
+var MATCHUP={
+ poss:{lct:.91,sct:.95,lb:1.03,side:1.00,poss:1.00},
+ sct:{poss:1.10,lb:1.02,lct:.96,side:1.02,sct:1.00},
+ lct:{poss:1.11,side:1.06,lb:.95,sct:.98,lct:1.00},
+ side:{lct:.93,lb:1.04,poss:1.02,sct:1.00,side:1.00},
+ lb:{poss:1.06,sct:1.00,side:1.02,lct:.96,lb:.98}};
+
+/* ============ 役割ごとの関与度 ============ */
+var SH={
+ GK:{att:0,mid:.03,def:.12,pass:.05,cross:0,drib:.01,duel:.05,run:.40,sprint:.10},
+ CB:{att:.06,mid:.10,def:1.00,pass:.11,cross:.03,drib:.03,duel:1.00,run:.85,sprint:.60},
+ SB:{att:.28,mid:.28,def:.80,pass:.11,cross:.75,drib:.30,duel:.75,run:1.08,sprint:1.12},
+ DM:{att:.22,mid:.90,def:.75,pass:.13,cross:.10,drib:.25,duel:.85,run:1.02,sprint:.78},
+ CM:{att:.45,mid:1.00,def:.50,pass:.14,cross:.20,drib:.45,duel:.65,run:1.12,sprint:.92},
+ OM:{att:.80,mid:.75,def:.20,pass:.11,cross:.30,drib:.75,duel:.45,run:.98,sprint:1.02},
+ WG:{att:.90,mid:.40,def:.20,pass:.08,cross:1.00,drib:1.00,duel:.45,run:1.00,sprint:1.28},
+ CF:{att:1.00,mid:.28,def:.08,pass:.07,cross:.12,drib:.55,duel:.90,run:.90,sprint:1.06}};
+
+/* ============ 選手生成 ============ */
+var uid=0,usedNames={};
+function uniqueName(foreign){
+ var n,t=0;
+ do{n=foreign?pick(GAI):(pick(SEI)+' '+pick(MEI));t++;}while(usedNames[n]&&t<60);
+ if(usedNames[n])n=n+(uid+1);
+ usedNames[n]=1;return n;
+}
+function blankStats(){return {app:0,g:0,a:0,duel:0,cs:0,dist:0,spr:0,sh:0,sot:0,key:0,pas:0,drb:0,tkl:0,itc:0,clr:0,blk:0,crs:0,top:0};}
+function makePlayer(bonus,forcePos){
+ bonus=bonus||0;
+ var pos=forcePos||pick(['GK','CB','CB','SB','SB','DM','CM','CM','OM','WG','WG','CF','CF']);
+ var r=Math.random(),t;
+ if(r<.50)t=56+rnd(10); else if(r<.80)t=64+rnd(8); else if(r<.955)t=72+rnd(8); else t=79+rnd(10);
+ t+=bonus;
+ var a=Math.random(),age;
+ if(a<.18)age=18+rnd(4); else if(a<.56)age=22+rnd(5); else if(a<.86)age=27+rnd(5); else age=32+rnd(6);
+ var pos2='';
+ if(pos!=='GK'&&Math.random()<.04){
+  var alt=[];for(var q in APT[pos])if(APT[pos][q]===2)alt.push(q);
+  if(alt.length)pos2=pick(alt);
+ }
+ var st={},i;
+ for(i=0;i<AB.length;i++){
+  var dl=pos2?D[pos][AB[i]]*.6+D[pos2][AB[i]]*.4:D[pos][AB[i]];
+  st[AB[i]]=clamp(Math.round(t+dl+gauss()*4.2),22,99);
+ }
+ var p={id:++uid,pos:pos,pos2:pos2,age:age,st:st,mod:0,temp:0,slumpUntil:0,injuredUntil:0,carry:0,major:0,
+  retiring:false,orig:false,joined:S.year,prospect:false,univ:'',
+  foreign:Math.random()<.16,name:'',s:blankStats(),c:blankStats()};
+ p.name=uniqueName(p.foreign);
+ p.prone=clamp(.55+Math.random()*.9+(70-st.PHY)/120+(70-st.STA)/180,.4,1.9);
+ p.ovr=ovrFor(p,pos);
+ p.pot=p.ovr+(age<=21?3+rnd(12):age<=25?1+rnd(6):0);
+ return p;
+}
+function makeProspect(u){
+ var p=makePlayer(-7+(3-S.div));
+ if(p.foreign){delete usedNames[p.name];p.foreign=false;p.name=uniqueName(false);}
+ p.age=20+rnd(3);p.prospect=true;p.univ=u;
+ p.pot=p.ovr+15+rnd(6);
+ return p;
+}
+function tags(p){
+ var o=[];
+ if(p.prospect)o.push(['有望株',1]);
+ if(p.pos2)o.push(['ユーティリティ',1]);
+ if(p.univ)o.push([p.univ+'出身',0]);
+ if(p.foreign)o.push(['助っ人',0]);
+ if(p.age<=21)o.push(['若手',0]);
+ if(p.age>=33)o.push(['ベテラン',0]);
+ if(p.ovr>=80)o.push(['主力級',1]);
+ if(!p.prospect&&p.age<=22&&p.pot-p.ovr>=9)o.push(['大器',1]);
+ if(p.retiring)o.push(['引退示唆',0]);
+ return o;
+}
+function cardHTML(p,cls){
+ var h='<div class="card '+(cls||'')+'"><div class="head"><div>';
+ h+='<span class="pos">'+POSJ[p.pos]+'</span>'+(p.pos2?' <span class="pos">'+POSJ[p.pos2]+'</span>':'')+'<div class="pname">'+esc(p.name)+'</div>';
+ h+='<div class="pmeta">'+p.age+'歳・'+POSNAME[p.pos]+(p.pos2?'／'+POSNAME[p.pos2]:'')+'</div>';
+ var tg=tags(p),i;
+ for(i=0;i<tg.length;i++)h+='<span class="tag'+(tg[i][1]?' gold':'')+'">'+tg[i][0]+'</span>';
+ h+='</div><div class="ovr"><b>'+p.ovr+'</b><em>OVR</em></div></div><div class="stats">';
+ for(i=0;i<AB.length;i++){
+  var k=AB[i],v=ab(p,k);
+  h+='<div class="stat"><s>'+ABJ[k]+'</s><div class="bar"><i class="'+(v>=78?'hi':'')+'" style="width:'+clamp(v,5,99)+'%"></i></div><u>'+v+'</u></div>';
+ }
+ h+='</div><div class="apt">';
+ var order=['GK','CB','SB','DM','CM','OM','WG','CF'];
+ for(i=0;i<order.length;i++){
+  var q=aptP(p,order[i]);
+  h+='<b class="a'+q+'">'+order[i]+(q===3?' ◎':q===2?' ○':q===1?' △':' ×')+'</b>';
+ }
+ return h+'</div></div>';
+}
+
+/* ============ 状態 ============ */
+var SQUAD=20,PASSES=10;
+var S={squad:[],phase:1,passes:PASSES,cur:null,form:'4-4-2',tac:'poss',slots:[],teamName:'あなたのクラブ',
+ year:1,div:3,pool:[],stock:[],history:[],archive:[],log:[],cands:[],picked:[],releasing:[],
+ round:0,rounds:40,pts:0,w:0,d:0,l:0,gf:0,ga:0,fixtures:[],rivals:[],timer:null,ts:null,sg:'base'};
+function show(id){
+ var a=document.querySelectorAll('.screen'),i;
+ for(i=0;i<a.length;i++)a[i].classList.remove('on');
+ $(id).classList.add('on');window.scrollTo(0,0);
+}
+function divName(d){return 'J'+d;}
+function setTop(t){$('topstate').textContent=t;}
+
+/* ============ リーグ ============ */
+function newClub(d,div){
+ var core=coreOf(d.star),dev=gauss()*1.2;
+ return {name:d.name,core:core,dev:dev,st:core+dev,div:div,
+  ace:uniqueName(false),ace2:uniqueName(false),aceG:0,ace2G:0,
+  form:pick(FKEYS),tac:pick(TKEYS),pts:0,gf:0,ga:0,jit:0};
+}
+function buildPool(){
+ S.pool=[];
+ for(var d=1;d<=3;d++){var L=parseDef(LEAGUE[d]);for(var i=0;i<L.length;i++)S.pool.push(newClub(L[i],d));}
+ S.stock=parseDef(POOLDEF).map(function(x){return newClub(x,0);});
+ S.univs=parseDef(UNIVDEF).map(function(x){var c=newClub(x,0);c.univ=true;return c;});
+ S.haneda=newClub(parseDef(HANEDADEF)[0],0);S.haneda.guest=true;
+}
+function divClubs(d){var o=[],i;for(i=0;i<S.pool.length;i++)if(S.pool[i].div===d)o.push(S.pool[i]);return o;}
+function divAvg(d){var c=divClubs(d),s=0,i;for(i=0;i<c.length;i++)s+=c[i].st;return s/c.length;}
+function divRounds(d){return (divClubs(d).length+(S.div===d?1:0)-1)*2;}
+function simDivision(d){
+ var cs=divClubs(d),avg=divAvg(d),rd=divRounds(d),i;
+ for(i=0;i<cs.length;i++){
+  var c=cs[i];
+  var ppg=clamp(1.37+(c.st-avg)*.078,.45,2.4);
+  c.pts=clamp(Math.round(rd*ppg+gauss()*3.5),8,rd*3);
+  c.gf=clamp(Math.round(rd*(1.35+(c.st-avg)*.05)+gauss()*4),14,120);
+  c.ga=clamp(Math.round(rd*(1.35-(c.st-avg)*.045)+gauss()*4),12,120);
+  c.jit=gauss()*2;c.aceG=0;c.ace2G=0;
+  c.aceShare=.20+Math.random()*.15;c.ace2Share=.09+Math.random()*.07;
+ }
+}
+function buildSeason(){
+ S.rivals=divClubs(S.div);
+ S.rounds=S.rivals.length*2;
+ simDivision(1);simDivision(2);simDivision(3);
+ S.log=[];S.ts={n:0,gf:0,ga:0,cs:0,pass:0,poss:0,dist:0,spr:0,sh:0};
+ S.fixtures=[];
+ for(var k=0;k<S.rivals.length;k++){S.fixtures.push({c:k,home:true});S.fixtures.push({c:k,home:false});}
+ shuffle(S.fixtures);
+ S.round=0;S.pts=0;S.w=0;S.d=0;S.l=0;S.gf=0;S.ga=0;
+ for(var m=0;m<S.squad.length;m++){
+  var p=S.squad[m];p.s=blankStats();p.injuredUntil=p.carry||0;p.carry=0;p.temp=0;p.slumpUntil=0;p.ovr=ovrFor(p,p.pos);
+ }
+ initCups();
+}
+
+/* ============ ドラフト ============ */
+function startDraft(){S.squad=[];S.phase=1;S.passes=PASSES;show('s-draft');nextPlayer();renderMeter();renderRoster();}
+function nextPlayer(){S.cur=makePlayer(DRAFT_BONUS);$('d-card').innerHTML=cardHTML(S.cur,'enter');}
+function renderMeter(){
+ $('d-count').innerHTML='獲得 <i>'+S.squad.length+'</i> / '+SQUAD;
+ var h='';
+ for(var i=0;i<PASSES;i++)h+='<span class="'+(i<S.passes?'':'used')+'"></span>';
+ $('d-pass').innerHTML=h+'<s style="text-decoration:none;font-size:11px;margin-left:7px;color:rgba(242,245,238,.6)">見送り'+S.passes+'</s>';
+ $('btn-pass').disabled=S.passes<=0;
+ $('btn-pass').textContent=S.passes>0?'見送る':'見送れない';
+ setTop('獲得 '+S.squad.length+' / '+SQUAD);
+}
+function sortByPos(list){return list.slice().sort(function(a,b){return (PORD[a.pos]-PORD[b.pos])||(b.ovr-a.ovr);});}
+function rosterHTML(list,role){
+ var h='',cur='';
+ for(var i=0;i<list.length;i++){
+  var p=list[i];
+  if(p.pos!==cur){h+='<li class="rhead"><span class="rp">'+POSJ[p.pos]+'</span><span>'+POSNAME[p.pos]+'</span><span></span></li>';cur=p.pos;}
+  var bench=role&&S.slots.length&&S.slots.indexOf(p.id)<0;
+  h+='<li><span class="rp"></span><span>'+esc(p.name)+'<small>'+p.age+'歳'+(p.pos2?' ・'+POSJ[p.pos2]+'も◎':'')+(role?(bench?' ・控え':' ・スタメン'):'')+'</small></span><span class="rv">'+p.ovr+'</span></li>';
+ }
+ return h;
+}
+function renderRoster(){$('d-roster').innerHTML=rosterHTML(sortByPos(S.squad),false);}
+function take(){
+ S.cur.orig=true;S.squad.push(S.cur);renderRoster();
+ var limit=SQUAD;
+ if(S.squad.length>=limit){endPhase();return;}
+ nextPlayer();renderMeter();
+}
+function passPlayer(){if(S.passes<=0)return;S.passes--;nextPlayer();renderMeter();}
+function endPhase(){
+ $('sq-title').textContent=SQUAD+'人、集まりました';
+ $('sq-sub').textContent='おまかせで一番強い11人がスタメン、残り9人が控えになります。布陣と戦術を決めましょう。';
+ $('btn-sqnext').textContent='布陣を組む';
+ $('sq-roster').innerHTML=rosterHTML(sortByPos(S.squad),false);
+ setTop('獲得 '+S.squad.length+' / '+SQUAD);
+ show('s-squad');
+}
+/* ============ 布陣 ============ */
+function playerById(id){for(var i=0;i<S.squad.length;i++)if(S.squad[i].id===id)return S.squad[i];return null;}
+function slotFill(cur){
+ var slots=FORM[S.form].slots,n=slots.length,sq=S.squad,m=sq.length,i,j;
+ var E=[];
+ for(i=0;i<n;i++){E[i]=[];for(j=0;j<m;j++)E[i][j]=eff(sq[j],slots[i][0]);}
+ var idxOf={};for(j=0;j<m;j++)idxOf[sq[j].id]=j;
+ var asg=[],used={};
+ for(i=0;i<n;i++){
+  var k=(cur&&cur[i]!=null&&idxOf[cur[i]]!==undefined&&!used[idxOf[cur[i]]])?idxOf[cur[i]]:-1;
+  asg[i]=k;if(k>=0)used[k]=1;
+ }
+ var open=[];for(i=0;i<n;i++)if(asg[i]<0)open.push(i);
+ while(open.length){
+  var ps=-1,pp=-1,best=-1;
+  for(var o=0;o<open.length;o++){
+   var si=open[o],b1=-1,b2=-1,bp=-1;
+   for(j=0;j<m;j++){
+    if(used[j])continue;
+    var v=E[si][j];
+    if(v>b1){b2=b1;b1=v;bp=j;}else if(v>b2)b2=v;
+   }
+   var reg=(b2<0?999:b1-b2);
+   if(reg>best){best=reg;ps=si;pp=bp;}
+  }
+  asg[ps]=pp;used[pp]=1;open.splice(open.indexOf(ps),1);
+ }
+ var slotOf={};for(i=0;i<n;i++)slotOf[asg[i]]=i;
+ var moved=true,guard=0;
+ while(moved&&guard++<60){
+  moved=false;
+  for(i=0;i<n;i++)for(j=0;j<m;j++){
+   var cu=asg[i];
+   if(j===cu)continue;
+   var k2=slotOf[j],delta;
+   if(k2===undefined)delta=E[i][j]-E[i][cu];
+   else delta=(E[i][j]+E[k2][cu])-(E[i][cu]+E[k2][j]);
+   if(delta>0.01){
+    asg[i]=j;slotOf[j]=i;
+    if(k2===undefined)delete slotOf[cu];else{asg[k2]=cu;slotOf[cu]=k2;}
+    moved=true;
+   }
+  }
+ }
+ var out=[];for(i=0;i<n;i++)out[i]=sq[asg[i]].id;
+ return out;
+}
+function autoAssign(){S.slots=slotFill(null);renderPitch();renderAssign();}
+function carryOver(){
+ var slots=FORM[S.form].slots,cur=null;
+ if(S.slots&&S.slots.length===slots.length){
+  cur=[];for(var i=0;i<slots.length;i++)cur[i]=playerById(S.slots[i])?S.slots[i]:null;
+ }
+ S.slots=slotFill(cur);renderPitch();renderAssign();
+}
+function openFormation(){
+ var h='',k;
+ for(k in FORM)h+='<option value="'+k+'"'+(k===S.form?' selected':'')+'>'+k+'</option>';
+ $('f-form').innerHTML=h;
+ h='';
+ for(k in TAC)h+='<option value="'+k+'"'+(k===S.tac?' selected':'')+'>'+TAC[k].name+'</option>';
+ $('f-tac').innerHTML=h;
+ $('f-title').textContent=S.year===1?'布陣と戦術':divName(S.div)+' '+S.year+'年目の布陣';
+ if(S.year===1&&!S.slots.length)autoAssign();else carryOver();
+ renderProfile();
+ show('s-form');
+}
+function renderProfile(){
+ var pr=FORM[S.form].prof,t=TAC[S.tac],h='',k;
+ var adj={atk:t.chance,def:t.def*t.cs,mid:t.poss,side:t.cross,cnt:(S.tac==='lct'||S.tac==='sct')?1.12:.98,pos:t.poss*t.pass,prs:(S.tac==='sct')?1.15:(S.tac==='poss'?1.05:.95)};
+ for(k in PROFJ){
+  var v=clamp(Math.round(pr[k]*(adj[k]||1)),10,99);
+  h+='<div class="row"><s>'+PROFJ[k]+'</s><div class="bar"><i style="width:'+v+'%"></i></div><u>'+v+'</u></div>';
+ }
+ $('f-prof').innerHTML=h;
+ $('f-tacdesc').textContent=t.desc;
+}
+function renderPitch(){
+ var slots=FORM[S.form].slots,h='';
+ for(var i=0;i<slots.length;i++){
+  var sp=slots[i][0],p=playerById(S.slots[i]),a=p?aptP(p,sp):0;
+  var short=p?p.name.split(/[ ・]/)[0]:'';
+  h+='<div class="slot" style="left:'+slots[i][1]+'%;top:'+slots[i][2]+'%">'
+   +'<div class="disc'+(a<=1?' warn':'')+'">'+(p?ovrFor(p,sp):'')+'</div>'
+   +'<div class="nm">'+esc(short)+'<em>'+sp+(a===3?'◎':a===2?'○':a===1?'△':'×')+'</em></div></div>';
+ }
+ $('f-pitch').innerHTML=h;
+}
+function renderAssign(){
+ var slots=FORM[S.form].slots,h='',order=['GK','CB','SB','DM','CM','OM','WG','CF'],groups={},g,i,j;
+ for(g=0;g<order.length;g++)groups[order[g]]=[];
+ for(j=0;j<S.squad.length;j++)groups[S.squad[j].pos].push(S.squad[j]);
+ for(i=0;i<slots.length;i++){
+  var sp=slots[i][0];
+  h+='<div class="assign"><div class="lab">'+sp+'</div><select data-slot="'+i+'">';
+  for(g=0;g<order.length;g++){
+   var gp=groups[order[g]];
+   if(!gp.length)continue;
+   gp=gp.slice().sort(function(a,b){return ovrFor(b,sp)-ovrFor(a,sp);});
+   h+='<optgroup label="'+POSJ[order[g]]+'　'+POSNAME[order[g]]+'">';
+   for(j=0;j<gp.length;j++){
+    var p=gp[j],a=aptP(p,sp),mark=a===3?'◎':a===2?'○':a===1?'△':'×';
+    h+='<option value="'+p.id+'"'+(S.slots[i]===p.id?' selected':'')+'>'+mark+' '+ovrFor(p,sp)+'　'+esc(p.name)+'</option>';
+   }
+   h+='</optgroup>';
+  }
+  h+='</select></div>';
+ }
+ $('f-assign').innerHTML=h;
+ var sels=$('f-assign').querySelectorAll('select');
+ for(i=0;i<sels.length;i++)sels[i].addEventListener('change',onAssign);
+}
+function onAssign(e){
+ var slot=parseInt(e.target.getAttribute('data-slot'),10),id=parseInt(e.target.value,10);
+ var prev=S.slots.indexOf(id),old=S.slots[slot];
+ if(prev>-1&&prev!==slot)S.slots[prev]=old;
+ S.slots[slot]=id;renderPitch();renderAssign();
+}
+/* ============ 試合エンジン ============ */
+function lineup(){
+ var slots=FORM[S.form].slots,out=[],benchUsed={},i,j;
+ for(i=0;i<slots.length;i++){
+  var p=playerById(S.slots[i]);
+  if(p&&p.injuredUntil>S.round){
+   var best=null,bv=-1;
+   for(j=0;j<S.squad.length;j++){
+    var q=S.squad[j];
+    if(S.slots.indexOf(q.id)>-1||benchUsed[q.id]||q.injuredUntil>S.round)continue;
+    var v=eff(q,slots[i][0]);
+    if(v>bv){bv=v;best=q;}
+   }
+   if(best){benchUsed[best.id]=1;p=best;}
+  }
+  out.push({p:p,sp:slots[i][0]});
+ }
+ return out;
+}
+function attScore(p,am){return (ab(p,'ATK')*.35+ab(p,'JDG')*.18+ab(p,'DRI')*.16+ab(p,'POS')*.16+ab(p,'SPD')*.15)*am;}
+function defScore(p,am){return (ab(p,'DEF')*.34+ab(p,'POS')*.22+ab(p,'JDG')*.18+ab(p,'PHY')*.16+ab(p,'STA')*.10)*am;}
+function midScore(p,am){return (ab(p,'JDG')*.30+ab(p,'POS')*.26+ab(p,'DRI')*.22+ab(p,'STA')*.22)*am;}
+function aggUser(lu){
+ lu=lu||lineup();
+ var wa=0,wm=0,wd=0,sa=0,sm=0,sd=0,gk=55,i;
+ for(i=0;i<lu.length;i++){
+  var o=lu[i];if(!o.p)continue;
+  var am=aptMulP(o.p,o.sp),sh=SH[o.sp];
+  sa+=sh.att*attScore(o.p,am);wa+=sh.att;
+  sm+=sh.mid*midScore(o.p,am);wm+=sh.mid;
+  sd+=sh.def*defScore(o.p,am);wd+=sh.def;
+  if(o.sp==='GK')gk=defScore(o.p,am);
+ }
+ return {atk:wa?sa/wa:55,mid:wm?sm/wm:55,def:(wd?sd/wd:55)*.78+gk*.22,
+  prof:FORM[S.form].prof,tac:TAC[S.tac],tk:S.tac,lu:lu};
+}
+function aggAI(c){
+ var n=c.st;
+ return {atk:n+gauss()*1.8,mid:n+gauss()*1.8,def:n+gauss()*1.8,
+  prof:FORM[c.form]?FORM[c.form].prof:FORM['4-4-2'].prof,tac:TAC[c.tac]||TAC.poss,tk:c.tac||'poss'};
+}
+function mu(a,b){return (MATCHUP[a]&&MATCHUP[a][b])||1;}
+function wpick(list,fn){
+ var tot=0,i;
+ for(i=0;i<list.length;i++)tot+=fn(list[i]);
+ if(tot<=0)return list[0];
+ var r=Math.random()*tot;
+ for(i=0;i<list.length;i++){r-=fn(list[i]);if(r<=0)return list[i];}
+ return list[list.length-1];
+}
+function xgOf(A,B,home){
+ var atkP=A.atk*fm(A.prof.atk)*A.tac.chance*(1+(A.prof.side/100-.5)*(A.tac.cross-1)*.35);
+ var defP=B.def*fm(B.prof.def)*B.tac.def*(B.tac.cs>1?1.03:1);
+ return clamp(1.25*Math.exp((atkP-defP)/10*.40)*mu(A.tk,B.tk)*(home?1.14:1),.12,4.8);
+}
+function distribute(lu,gf,ga){
+ var t=TAC[S.tac],pr=FORM[S.form].prof,i,z;
+ var tot=0;
+ for(i=0;i<lu.length;i++)if(lu[i].p)tot+=SH[lu[i].sp].pass;
+ if(!tot)tot=1;
+ var A=aggUser(lu),B={mid:60,prof:FORM['4-4-2'].prof,tac:TAC.poss};
+ var poss=S._poss,passes=S._pass;
+ var teamSh=0,teamDist=0,teamSpr=0;
+ for(i=0;i<lu.length;i++){
+  var o=lu[i];if(!o.p)continue;
+  var p=o.p,sp=o.sp,sh=SH[sp],am=aptMulP(p,sp),s=p.s;
+  var V=function(k){return ab(p,k)*am;};
+  s.app++;
+  var shots=pois(sh.att*(V('ATK')/38)*.85*t.chance*fm(pr.atk));
+  s.sh+=shots;
+  var sot=0;
+  for(z=0;z<shots;z++)if(Math.random()<clamp(.30+V('JDG')/700+V('ATK')/800,.2,.72))sot++;
+  s.sot+=sot;teamSh+=shots;
+  s.key+=pois(sh.mid*.45*((V('JDG')+V('POS'))/160)*t.pass);
+  s.pas+=Math.round(passes*(sh.pass/tot)*clamp(.74+V('JDG')/420,.6,.97));
+  s.drb+=pois(sh.drib*1.5*(V('DRI')/42)*t.drib);
+  s.tkl+=pois(sh.def*1.5*(V('DEF')/46));
+  s.itc+=pois(sh.def*1.2*((V('POS')+V('JDG'))/190));
+  s.clr+=pois(sh.def*(sp==='CB'?2.2:sp==='SB'?1.1:sp==='GK'?1.2:.45)*((V('DEF')+V('PHY'))/210));
+  s.blk+=pois(sh.def*(sp==='CB'?1.0:.4)*(V('DEF')/150));
+  s.crs+=pois(sh.cross*2.0*((V('DRI')+V('SPD'))/170)*t.cross*fm(pr.side));
+  s.duel+=pois(sh.duel*3.2*((V('PHY')*(t.phy||1)+V('DEF'))/150)*t.duel);
+  var dist=clamp((6.4+sh.run*3.6*(V('STA')/72))*t.run*(sp==='GK'?.55:1),3.2,14);
+  s.dist+=dist;teamDist+=dist;
+  var spr=Math.max(0,Math.round(sh.sprint*17*(V('SPD')/70)*(V('STA')/74)*t.sprint+gauss()*2));
+  s.spr+=spr;teamSpr+=spr;
+  var top=26.5+V('SPD')*.105+Math.random()*.9;
+  if(sp!=='GK'&&top>s.top)s.top=top;
+ }
+ for(var k=0;k<gf;k++){
+  var sc=wpick(lu,function(x){return x.p?Math.pow(Math.max(ab(x.p,'ATK')*aptMulP(x.p,x.sp),10)/40,1.7)*SH[x.sp].att:0;});
+  if(sc&&sc.p)sc.p.s.g++;
+  if(Math.random()<.63){
+   var as=wpick(lu,function(x){
+    if(!x.p||x===sc)return 0;
+    var sh2=SH[x.sp];
+    return ((ab(x.p,'JDG')+ab(x.p,'DRI'))/80)*(sh2.mid*.5+sh2.att*.7+sh2.cross*.6*(S.tac==='side'?1.8:1));
+   });
+   if(as&&as.p)as.p.s.a++;
+  }
+ }
+ if(ga===0)for(i=0;i<lu.length;i++){
+  var q=lu[i];
+  if(q.p&&(q.sp==='GK'||q.sp==='CB'||q.sp==='SB'))q.p.s.cs++;
+ }
+ return {sh:teamSh,dist:teamDist,spr:teamSpr};
+}
+function playRound(){
+ S.round++;
+ var fx=S.fixtures[S.round-1],club=S.rivals[fx.c];
+ var A=aggUser(),B=aggAI(club);
+ var gf=pois(xgOf(A,B,fx.home)),ga=pois(xgOf(B,A,!fx.home));
+ var poss=clamp(50+(A.mid*fm(A.prof.mid)*A.tac.poss-(B.mid+6)*fm(B.prof.mid)*B.tac.poss)*1.30,26,74);
+ var passes=Math.round((195+poss*5.2)*A.tac.pass*fm(A.prof.pos));
+ S._poss=poss;S._pass=passes;
+ var tm=distribute(A.lu,gf,ga);
+ S.gf+=gf;S.ga+=ga;
+ var res=gf>ga?'w':gf<ga?'l':'d';
+ if(res==='w'){S.w++;S.pts+=3;}else if(res==='d'){S.d++;S.pts+=1;}else S.l++;
+ var ts=S.ts;
+ ts.n++;ts.gf+=gf;ts.ga+=ga;if(ga===0)ts.cs++;
+ ts.pass+=passes;ts.poss+=poss;ts.dist+=tm.dist;ts.spr+=tm.spr;ts.sh+=tm.sh;
+ S.log.push({t:'m',r:S.round,h:fx.home,n:club.name,gf:gf,ga:ga,res:res,
+  po:Math.round(poss),ps:passes,sh:tm.sh,fo:club.form,tc:(TAC[club.tac]||TAC.poss).name});
+ var row=document.createElement('div');row.className='row';
+ row.innerHTML=logHTML(S.log[S.log.length-1]);
+ $('se-log').appendChild(row);$('se-log').scrollTop=$('se-log').scrollHeight;
+ for(var ci=0;ci<S.cupSched.length;ci++)if(S.cupSched[ci].r===S.round)runCupStage(S.cups[S.cupSched[ci].cup]);
+ events();updateBar();
+}
+function logHTML(e){
+ if(e.t==='c'){
+  return '<span class="rd">'+e.cup+'</span><span>'+e.st+'　'+(e.legs===2?'':(e.neutral?'':(e.home?'H ':'A ')))+esc(e.n)
+   +'<span class="mst">'+(e.legs===2?'2試合合計 ':'')+(e.pk?(e.res==='w'?'PK勝ち ':'PK負け '):'')+(e.res==='w'?'勝ち抜け':'敗退')+'</span></span>'
+   +'<span class="sc '+e.res+'">'+e.gf+'-'+e.ga+'</span>';
+ }
+ return '<span class="rd">第'+e.r+'節</span><span>'+(e.h?'H':'A')+'　'+esc(e.n)
+  +'<span class="mst">支配'+e.po+'% パス'+e.ps+' シュート'+e.sh+'　vs '+e.fo+'／'+e.tc+'</span></span>'
+  +'<span class="sc '+e.res+'">'+e.gf+'-'+e.ga+'</span>';
+}
+function addEv(t,bad){
+ S.log.push({t:'e',r:S.round,text:t,bad:!!bad});
+ var d=document.createElement('div');d.className='ev'+(bad?' bad':'');d.innerHTML=t;
+ $('se-log').appendChild(d);$('se-log').scrollTop=$('se-log').scrollHeight;
+}
+var TACINJ={poss:1.0,sct:1.18,lct:.95,side:1.05,lb:1.08};
+var RETP={35:.18,36:.32,37:.5,38:.7};
+function injure(p){
+ var r=Math.random(),wk;
+ if(r<.70){
+  wk=1+rnd(3);p.injuredUntil=S.round+wk;
+  addEv('<b>'+esc(p.name)+'</b> が軽傷。'+wk+'節ほど様子見。',1);
+ }else if(r<.92){
+  wk=4+rnd(5);p.injuredUntil=S.round+wk;
+  addEv('<b>'+esc(p.name)+'</b> が負傷。'+wk+'節ほど離脱します。',1);
+ }else{
+  wk=12+rnd(13);p.injuredUntil=S.round+wk;p.major++;
+  var ds=3+rnd(4),dt=1+rnd(3);
+  p.st.SPD=Math.max(20,p.st.SPD-ds);p.st.STA=Math.max(20,p.st.STA-dt);p.ovr=ovrFor(p,p.pos);
+  addEv('<b>'+esc(p.name)+'</b> が大怪我。'+wk+'節以上の長期離脱。後遺症でスピード−'+ds+'。',1);
+ }
+}
+function events(){
+ var mid=Math.floor(S.rounds/2);
+ for(var i=0;i<S.squad.length;i++){
+  var p=S.squad[i];
+  if(S.round===mid&&p.age>=35&&!p.retiring){
+   var pr=p.age>=39?.88:RETP[p.age];
+   if(p.ovr<65)pr+=.1;
+   if(Math.random()<pr){p.retiring=true;addEv('<b>'+esc(p.name)+'</b>（'+p.age+'歳）が今季限りでの現役引退を示唆。');}
+  }
+  if(p.slumpUntil&&S.round>=p.slumpUntil){
+   p.temp=0;p.slumpUntil=0;p.ovr=ovrFor(p,p.pos);
+   addEv('<b>'+esc(p.name)+'</b> が復調。→ '+p.ovr);continue;
+  }
+  if(p.injuredUntil>S.round||p.slumpUntil)continue;
+  if(Math.random()<.0105*(p.prone||1)*(TACINJ[S.tac]||1)){injure(p);continue;}
+  var r=Math.random();
+  var awk=(p.prospect&&p.ovr<p.pot)?.02:((p.age<=23&&p.ovr<p.pot)?.009:0);
+  var dec=p.age>=32?.007:0;
+  if(r<awk){
+   var up=2+rnd(4);p.mod+=up;p.ovr=ovrFor(p,p.pos);
+   addEv('<b>'+esc(p.name)+'</b>（'+p.age+'歳）がシーズン中に覚醒。+'+up+' → '+p.ovr);
+  }else if(r<awk+dec){
+   var dn=2+rnd(4);p.mod-=dn;p.ovr=ovrFor(p,p.pos);
+   addEv('<b>'+esc(p.name)+'</b>（'+p.age+'歳）に衰えが出た。−'+dn+' → '+p.ovr,1);
+  }else if(r<awk+dec+.012){
+   var sl=3+rnd(4);p.temp=-sl;p.slumpUntil=S.round+4+rnd(6);p.ovr=ovrFor(p,p.pos);
+   addEv('<b>'+esc(p.name)+'</b> が不調に入った。−'+sl+' → '+p.ovr,1);
+  }
+ }
+}
+function table(){
+ var rows=[{name:S.teamName,pts:S.pts,gf:S.gf,ga:S.ga,me:1}],f=S.round/S.rounds,i;
+ for(i=0;i<S.rivals.length;i++){
+  var c=S.rivals[i];
+  rows.push({name:c.name,pts:Math.round(c.pts*f+c.jit*Math.sqrt(f)),gf:Math.round(c.gf*f),ga:Math.round(c.ga*f),me:0,c:c});
+ }
+ rows.sort(function(a,b){return (b.pts-a.pts)||((b.gf-b.ga)-(a.gf-a.ga))||(b.gf-a.gf);});
+ return rows;
+}
+function divTable(d){
+ var cs=divClubs(d),rows=[],i;
+ for(i=0;i<cs.length;i++)rows.push({name:cs[i].name,pts:cs[i].pts,gf:cs[i].gf,ga:cs[i].ga,me:0,c:cs[i]});
+ if(S.div===d)rows.push({name:S.teamName,pts:S.pts,gf:S.gf,ga:S.ga,me:1});
+ rows.sort(function(a,b){return (b.pts-a.pts)||((b.gf-b.ga)-(a.gf-a.ga))||(b.gf-a.gf);});
+ return rows;
+}
+function myRank(){var t=table(),i;for(i=0;i<t.length;i++)if(t[i].me)return i+1;return 0;}
+function userSt(){var a=aggUser();return (a.atk+a.def+a.mid)/3;}
+function starVal(st){return clamp((st-56)/6,.2,5);}
+function starHTML(st){
+ var v=starVal(st);
+ return '<span class="stars"><i style="width:'+(v/5*100)+'%"></i></span><span class="stv">'+v.toFixed(1)+'</span>';
+}
+function updateBar(){
+ $('se-pts').textContent=S.pts;
+ $('se-rec').textContent=S.w+'-'+S.d+'-'+S.l;
+ var gd=S.gf-S.ga;
+ $('se-gd').textContent=(gd>0?'+':'')+gd;
+ $('se-rank').textContent=myRank()+'位';
+ $('se-title').textContent=divName(S.div)+'　'+S.year+'年目　第'+S.round+'節 / '+S.rounds;
+ setTop(S.form+'／'+TAC[S.tac].name);
+}
+function kickoff(){
+ if(S.year===1)S.teamName=($('i-team').value||'あなたのクラブ').slice(0,14);
+ buildSeason();$('se-log').innerHTML='';show('s-season');updateBar();
+ S.timer=setInterval(function(){
+  playRound();
+  if(S.round>=S.rounds){clearInterval(S.timer);S.timer=null;setTimeout(finish,500);}
+ },120);
+}
+function skip(){
+ if(S.timer){clearInterval(S.timer);S.timer=null;}
+ while(S.round<S.rounds)playRound();
+ finish();
+}
+
+/* ============ カップ戦 ============ */
+function userEnt(){return {me:true,name:S.teamName,div:S.div};}
+function entDiv(e){return e.me?S.div:(e.div||4);}
+function entSt(e){return e.me?userSt():e.st;}
+function sideOf(e){return e.me?aggUser():aggAI(e);}
+function makeCup(key,name,ents,size,stages){
+ ents=ents.slice().sort(function(a,b){return (entDiv(a)-entDiv(b))||(entSt(b)-entSt(a));});
+ var byes=size-ents.length;
+ return {key:key,name:name,stages:stages,cur:0,alive:null,bye:ents.slice(0,byes),first:ents.slice(byes),res:[],champ:null,r16:[]};
+}
+function initCups(){
+ S.cups={
+  emp:makeCup('emp','天皇杯',S.pool.concat(S.stock,S.univs,[S.haneda,userEnt()]),128,
+   [{n:'1回戦'},{n:'2回戦'},{n:'3回戦'},{n:'4回戦'},{n:'準々決勝'},{n:'準決勝'},{n:'決勝',neutral:true}]),
+  lc:makeCup('lc','Jリーグカップ',S.pool.concat([userEnt()]),64,
+   [{n:'1回戦'},{n:'2回戦'},{n:'3回戦'},{n:'準々決勝',legs:2},{n:'準決勝',legs:2},{n:'決勝',neutral:true}])};
+ S.cupSched=[];
+ var R=S.rounds;
+ [.08,.19,.31,.45,.60,.76,.93].forEach(function(f){S.cupSched.push({r:Math.max(1,Math.round(R*f)),cup:'emp'});});
+ [.05,.14,.26,.42,.56,.86].forEach(function(f){S.cupSched.push({r:Math.max(1,Math.round(R*f)),cup:'lc'});});
+}
+function pkWin(h,a){return Math.random()<clamp(.5+(entSt(h)-entSt(a))*.01,.35,.65)?h:a;}
+function cupMatch(x,y,st){
+ var h=x,a=y;
+ if(!st.neutral&&(entDiv(y)>entDiv(x)||(entDiv(y)===entDiv(x)&&Math.random()<.5))){h=y;a=x;}
+ var H=sideOf(h),A=sideOf(a),m={h:h,a:a,legs:st.legs||1,neutral:!!st.neutral};
+ m.gh=pois(xgOf(H,A,!st.neutral));m.ga=pois(xgOf(A,H,false));
+ if(m.legs===2){
+  var H2=sideOf(h),A2=sideOf(a);
+  m.gh2=pois(xgOf(H2,A2,false));m.ga2=pois(xgOf(A2,H2,true));
+ }
+ var th=m.gh+(m.gh2||0),ta=m.ga+(m.ga2||0);
+ if(th===ta){m.pk=true;m.win=pkWin(h,a);}else m.win=th>ta?h:a;
+ return m;
+}
+function runCupStage(cup){
+ if(!cup||cup.cur>=cup.stages.length)return;
+ var st=cup.stages[cup.cur],ents=shuffle((cup.cur===0?cup.first:cup.alive).slice());
+ if(cup.key==='emp'&&st.n==='4回戦')cup.r16=ents.slice();
+ var win=[],ms=[];
+ for(var i=0;i+1<ents.length;i+=2){
+  var m=cupMatch(ents[i],ents[i+1],st);ms.push(m);win.push(m.win);
+  if(m.h.me||m.a.me)cupLog(cup,st,m);
+ }
+ if(ents.length%2)win.push(ents[ents.length-1]);
+ if(cup.cur===0)win=win.concat(cup.bye);
+ cup.alive=win;cup.res.push({n:st.n,ms:ms});cup.cur++;
+ if(cup.cur>=cup.stages.length)cup.champ=win[0];
+}
+function cupLog(cup,st,m){
+ var home=!!m.h.me,opp=home?m.a:m.h;
+ var gf=home?m.gh+(m.gh2||0):m.ga+(m.ga2||0),ga=home?m.ga+(m.ga2||0):m.gh+(m.gh2||0);
+ var e={t:'c',r:S.round,cup:cup.name,st:st.n,n:opp.name,gf:gf,ga:ga,res:m.win.me?'w':'l',pk:!!m.pk,legs:m.legs,home:home,neutral:m.neutral};
+ S.log.push(e);
+ var row=document.createElement('div');row.className='row cup';row.innerHTML=logHTML(e);
+ $('se-log').appendChild(row);$('se-log').scrollTop=$('se-log').scrollHeight;
+}
+function cupScore(m){
+ var th=m.gh+(m.gh2||0),ta=m.ga+(m.ga2||0);
+ return th+'-'+ta+(m.pk?'<br><span style="font-size:10px;opacity:.7">PK</span>':'');
+}
+function cupRow(label,m){
+ var hw=m.win===m.h;
+ return '<div class="cuprow"><span class="rd">'+label+'</span><span>'
+  +(hw?'<b style="color:var(--amber)">'+esc(m.h.name)+'</b>':esc(m.h.name))+' <span style="opacity:.5">vs</span> '
+  +(hw?esc(m.a.name):'<b style="color:var(--amber)">'+esc(m.a.name)+'</b>')
+  +(m.legs===2?'<span class="mst" style="display:block;font-size:10px;opacity:.55">2試合合計 '+m.gh+'-'+m.ga+' / '+m.gh2+'-'+m.ga2+'</span>':'')
+  +'</span><span class="sc">'+cupScore(m)+'</span></div>';
+}
+function renderCup(key){
+ var cup=S.cups[key],h='',i,j,path='';
+ h+='<div class="cupchamp">優勝：<b>'+esc(cup.champ?cup.champ.name:'—')+'</b>'+(cup.champ&&cup.champ.me?'　🏆':'')+'</div>';
+ for(i=0;i<cup.res.length;i++)for(j=0;j<cup.res[i].ms.length;j++){
+  var m=cup.res[i].ms[j];
+  if(m.h.me||m.a.me)path+=cupRow(cup.res[i].n,m);
+ }
+ h+='<h3 class="subh">あなたのクラブの戦い</h3>'+(path||'<p class="sub" style="margin:6px 0 0">シード（出場前に終了）</p>');
+ if(key==='emp'){
+  var us=[];for(i=0;i<cup.r16.length;i++)if(cup.r16[i].univ)us.push(cup.r16[i].name);
+  h+='<p class="sub" style="margin:10px 0 0">ベスト16に進んだ大学：'+(us.length?esc(us.join('、'))+'（オフに有望株が候補入り）':'なし')+'</p>';
+ }
+ h+='<h3 class="subh">準々決勝から</h3>';
+ for(i=0;i<cup.res.length;i++){
+  var nm=cup.res[i].n;
+  if(nm!=='準々決勝'&&nm!=='準決勝'&&nm!=='決勝')continue;
+  for(j=0;j<cup.res[i].ms.length;j++)h+=cupRow(nm,cup.res[i].ms[j]);
+ }
+ $('r-cup').innerHTML=h;
+}
+
+/* ============ プレーオフ ============ */
+function sideStrength(row){
+ if(row.me){var a=aggUser();return {atk:a.atk,def:a.def,prof:a.prof,tac:a.tac,tk:a.tk};}
+ return aggAI(row.c);
+}
+function poMatch(hi,lo){
+ var A=sideStrength(hi),B=sideStrength(lo);
+ var ga=pois(xgOf(A,B,true)),gb=pois(xgOf(B,A,false));
+ return {hi:hi,lo:lo,ga:ga,gb:gb,draw:ga===gb,win:gb>ga?lo:hi};
+}
+function poHTML(label,m){
+ var hw=m.win===m.hi;
+ return '<div class="pomatch"><h3>'+label+'</h3><div class="line">'
+  +'<span class="r'+(hw?' win':'')+'">'+esc(m.hi.name)+'<span class="rk">'+m.hi.rk+'位・ホーム</span></span>'
+  +'<span class="sc">'+m.ga+' - '+m.gb+'</span>'
+  +'<span class="'+(hw?'':'win')+'">'+esc(m.lo.name)+'<span class="rk">'+m.lo.rk+'位</span></span></div>'
+  +'<div class="note">'+(m.draw?'引き分け。'+m.hi.rk+'位の'+esc(m.hi.name)+'が上位のため勝ち上がり。':esc(m.win.name)+'が勝ち上がり。')+'</div></div>';
+}
+function simPO(rows){
+ if(!rows||rows.length<6)return null;
+ var s3=rows[2],s4=rows[3],s5=rows[4],s6=rows[5];
+ s3.rk=3;s4.rk=4;s5.rk=5;s6.rk=6;
+ var m1=poMatch(s3,s6),m2=poMatch(s4,s5);
+ var a=m1.win,b=m2.win;
+ var m3=poMatch(a.rk<b.rk?a:b,a.rk<b.rk?b:a);
+ return {ms:[['準決勝 第1試合',m1],['準決勝 第2試合',m2],['決勝',m3]],
+  winner:m3.win.name,winClub:m3.win.c||null,won:!!m3.win.me};
+}
+function runPlayoff(){
+ var po=simPO(S.rows);
+ S.poAll[S.div]=po;
+ $('po-title').textContent=divName(S.div-1)+'昇格プレーオフ';
+ $('po-log').innerHTML='';
+ $('btn-po-next').style.display='none';
+ setTop(divName(S.div)+' '+S.rank+'位 / PO');
+ show('s-po');
+ var i=0;
+ (function step(){
+  if(i>=po.ms.length){
+   S.po={won:po.won,winner:po.winner};
+   $('btn-po-next').style.display='block';return;
+  }
+  $('po-log').insertAdjacentHTML('beforeend',poHTML(po.ms[i][0],po.ms[i][1]));
+  i++;setTimeout(step,1200);
+ })();
+}
+
+/* ============ シーズン終了 ============ */
+function finish(){
+ var z;
+ for(z=0;z<S.pool.length;z++){
+  var pc=S.pool[z];
+  pc.aceG=Math.round(pc.gf*pc.aceShare);
+  pc.ace2G=Math.round(pc.gf*pc.ace2Share);
+ }
+ for(var ck in S.cups)while(S.cups[ck].cur<S.cups[ck].stages.length)runCupStage(S.cups[ck]);
+ for(z=0;z<S.squad.length;z++){var sp=S.squad[z];sp.carry=Math.max(0,sp.injuredUntil-S.rounds);}
+ computeAllTS();
+ S.archive.push({year:S.year,div:S.div,log:S.log.slice()});
+ S.rows=table();S.rank=0;
+ for(z=0;z<S.rows.length;z++)if(S.rows[z].me)S.rank=z+1;
+ S.po=null;S.poAll={};
+ for(var d=2;d<=3;d++)if(d!==S.div)S.poAll[d]=simPO(divTable(d));
+ if(S.div>1&&S.rank>=3&&S.rank<=6)runPlayoff();
+ else{
+  if(S.div>1)S.poAll[S.div]=simPO(S.rows);
+  renderResult();
+ }
+}
+function renderTable(d){
+ var t=(d===S.div)?S.rows:divTable(d),n=t.length;
+ var h='<tr><th>#</th><th>クラブ / 戦力</th><th>勝点</th><th>得</th><th>失</th><th>差</th></tr>';
+ for(var j=0;j<n;j++){
+  var r=t[j],cls='';
+  if(d>1)cls=j<2?'up':(j<6?'po':'');
+  else cls=j<3?'up':'';
+  if(d<3&&j>=n-3)cls='down';
+  if(d===3&&j===n-1)cls='down';
+  if(r.me)cls='me';
+  var st=r.me?userSt():r.c.st;
+  h+='<tr class="'+cls+'"><td class="num">'+(j+1)+'</td>'
+   +'<td>'+esc(r.name)+'<br>'+starHTML(st)+'</td>'
+   +'<td class="num">'+r.pts+'</td><td class="num">'+r.gf+'</td><td class="num">'+r.ga+'</td>'
+   +'<td class="num">'+((r.gf-r.ga)>0?'+':'')+(r.gf-r.ga)+'</td></tr>';
+ }
+ $('r-table').innerHTML=h;
+}
+function renderPO(d){
+ $('r-potitle').textContent=(d===1?'昇格プレーオフ':'J'+(d-1)+'昇格プレーオフ（J'+d+'）');
+ if(d===1){$('r-po').innerHTML='<p class="sub" style="margin:0">J1には昇格プレーオフはありません。下位3クラブがJ2へ降格します。</p>';return;}
+ var po=S.poAll?S.poAll[d]:null;
+ if(!po){$('r-po').innerHTML='<p class="sub" style="margin:0">記録がありません。</p>';return;}
+ var h='';
+ for(var i=0;i<po.ms.length;i++)h+=poHTML(po.ms[i][0],po.ms[i][1]);
+ h+='<p class="sub" style="margin:10px 0 0">'+esc(po.winner)+'がJ'+(d-1)+'へ昇格。</p>';
+ $('r-po').innerHTML=h;
+}
+function scorerList(d){
+ var sc=[],cs=divClubs(d),i;
+ if(d===S.div)for(i=0;i<S.squad.length;i++)if(S.squad[i].s.g>0)sc.push({n:S.squad[i].name,g:S.squad[i].s.g,me:1,club:S.teamName});
+ for(i=0;i<cs.length;i++){
+  if(cs[i].aceG>0)sc.push({n:cs[i].ace,g:cs[i].aceG,me:0,club:cs[i].name});
+  if(cs[i].ace2G>0)sc.push({n:cs[i].ace2,g:cs[i].ace2G,me:0,club:cs[i].name});
+ }
+ sc.sort(function(a,b){return b.g-a.g;});
+ return sc;
+}
+function renderScorers(d){
+ $('r-sctitle').textContent='得点ランキング（J'+d+'）';
+ var sc=scorerList(d),h='<tr><th>#</th><th>選手</th><th>得点</th></tr>';
+ for(var m=0;m<Math.min(sc.length,10);m++){
+  h+='<tr class="'+(sc[m].me?'me':'')+'"><td class="num">'+(m+1)+'</td><td>'+esc(sc[m].n)
+   +'<br><span style="opacity:.55;font-size:10.5px">'+esc(sc[m].club)+'</span></td><td class="num">'+sc[m].g+'</td></tr>';
+ }
+ $('r-scorers').innerHTML=h;
+}
+function aiTeamStats(c,d){
+ var rd=divRounds(d),pr=(FORM[c.form]||FORM['4-4-2']).prof,t=TAC[c.tac]||TAC.poss,avg=divAvg(d);
+ var poss=clamp(50+(c.st-avg)*.9+(t.poss-1)*60+(pr.pos-50)*.12+gauss()*1.5,30,72);
+ return {gpm:c.gf/rd,cs:Math.round(rd*Math.exp(-c.ga/rd)*.95*(t.cs||1)),poss:poss,
+  dist:(108+(pr.mid-50)*.05)*t.run+gauss()*1.2,spr:178*t.sprint*(1+(pr.side-50)*.002)+gauss()*6,pr:pr,t:t};
+}
+function computeAllTS(){
+ for(var d=1;d<=3;d++){
+  var cs=divClubs(d),sum=0,i;
+  for(i=0;i<cs.length;i++){cs[i].ts=aiTeamStats(cs[i],d);sum+=cs[i].ts.poss;}
+  var shift=(sum/cs.length-50)*.9;
+  for(i=0;i<cs.length;i++){
+   var x=cs[i].ts;x.poss=clamp(x.poss-shift,28,74);
+   x.pass=Math.round((195+x.poss*5.2)*x.t.pass*fm(x.pr.pos));
+  }
+ }
+}
+function renderTSDiv(d){
+ var t=(d===S.div)?S.rows:divTable(d);
+ $('r-tsdivtitle').textContent='チーム成績（J'+d+'）';
+ var h='<tr><th>#</th><th>クラブ</th><th>得点/試合</th><th>完封</th><th>パス</th><th>支配率</th><th>走行km</th><th>スプリント</th></tr>';
+ for(var j=0;j<t.length;j++){
+  var r=t[j],x,fo;
+  if(r.me){var q=S.ts,n=q.n||1;x={gpm:q.gf/n,cs:q.cs,pass:Math.round(q.pass/n),poss:q.poss/n,dist:q.dist/n,spr:q.spr/n};fo=S.form+'／'+TAC[S.tac].name;}
+  else{x=r.c.ts||aiTeamStats(r.c,d);fo=r.c.form+'／'+(TAC[r.c.tac]||TAC.poss).name;}
+  h+='<tr class="'+(r.me?'me':'')+'"><td class="num">'+(j+1)+'</td><td>'+esc(r.name)
+   +'<br><span style="opacity:.5;font-size:10px">'+fo+'</span></td>'
+   +'<td class="num">'+x.gpm.toFixed(2)+'</td><td class="num">'+x.cs+'</td><td class="num">'+x.pass+'</td>'
+   +'<td class="num">'+x.poss.toFixed(1)+'%</td><td class="num">'+x.dist.toFixed(1)+'</td><td class="num">'+Math.round(x.spr)+'</td></tr>';
+ }
+ $('r-tsdiv').innerHTML=h;
+}
+function renderDiv(d){renderTable(d);renderTSDiv(d);renderPO(d);renderScorers(d);}
+var SG={
+ base:{name:'基本',cols:[['出場','app'],['得点','g'],['アシスト','a'],['デュエル','duel'],['完封','cs']]},
+ att:{name:'攻撃',cols:[['シュート','sh'],['枠内','sot'],['キーパス','key'],['ドリブル','drb'],['クロス','crs']]},
+ def:{name:'守備',cols:[['タックル','tkl'],['インターセプト','itc'],['クリア','clr'],['ブロック','blk']]},
+ run:{name:'走力',cols:[['走行km','dist'],['スプリント','spr'],['最高速度','top'],['パス成功','pas']]}};
+function renderSquadStats(){
+ var g=SG[S.sg],sq=sortByPos(S.squad),h='<tr><th>POS</th><th>選手</th>',i,j;
+ for(j=0;j<g.cols.length;j++)h+='<th>'+g.cols[j][0]+'</th>';
+ h+='</tr>';
+ for(i=0;i<sq.length;i++){
+  var p=sq[i],xi=S.slots.indexOf(p.id)>-1;
+  h+='<tr><td class="num" style="text-align:left">'+POSJ[p.pos]+'</td>'
+   +'<td>'+esc(p.name)+'<br><span style="opacity:.5;font-size:10.5px">'+p.age+'歳'+(xi?'・スタメン':'')+'</span></td>';
+  for(j=0;j<g.cols.length;j++){
+   var k=g.cols[j][1],v=p.s[k];
+   if(k==='dist')v=p.s.app?(p.s.dist/p.s.app).toFixed(1):'0.0';
+   else if(k==='top')v=p.s.top?p.s.top.toFixed(1):'–';
+   h+='<td class="num">'+v+'</td>';
+  }
+  h+='</tr>';
+ }
+ $('r-squad').innerHTML=h;
+}
+function renderTeamStats(){
+ var t=S.ts,n=t.n||1;
+ var items=[['1試合平均得点',(t.gf/n).toFixed(2)],['クリーンシート',t.cs+'試合'],
+  ['平均パス数',Math.round(t.pass/n)],['平均支配率',(t.poss/n).toFixed(1)+'%'],
+  ['平均走行距離',(t.dist/n).toFixed(1)+'km'],['平均スプリント',Math.round(t.spr/n)]];
+ var h='';
+ for(var i=0;i<items.length;i++)h+='<div><b>'+items[i][1]+'</b><s>'+items[i][0]+'</s></div>';
+ $('r-tstats').innerHTML=h;
+ var pr=FORM[S.form].prof;
+ $('r-setup').textContent=S.form+'／'+TAC[S.tac].name+'　（攻撃力'+pr.atk+'・守備力'+pr.def+'・中盤支配'+pr.mid+'・サイド'+pr.side+'）';
+}
+function renderLogSelect(){
+ var a=S.archive,h='';
+ for(var i=a.length-1;i>=0;i--)h+='<option value="'+i+'">'+a[i].year+'年目（'+divName(a[i].div)+'）</option>';
+ $('r-logyear').innerHTML=h;
+ $('r-logsel').style.display=a.length>1?'block':'none';
+ renderLog(a.length-1);
+}
+function renderLog(i){
+ var e=S.archive[i];
+ if(!e){$('r-log').innerHTML='';return;}
+ var h='';
+ for(var j=0;j<e.log.length;j++){
+  var x=e.log[j];
+  if(x.t==='m'||x.t==='c')h+='<div class="row'+(x.t==='c'?' cup':'')+'">'+logHTML(x)+'</div>';
+  else h+='<div class="ev'+(x.bad?' bad':'')+'">'+x.text+'</div>';
+ }
+ $('r-log').innerHTML=h;
+}
+function renderResult(){
+ var t=S.rows,rank=S.rank,n=t.length,moved=0,head,body;
+ var champ=(S.div===1&&rank===1);
+ if(S.div>1&&rank<=2){moved=-1;head=divName(S.div)+' '+rank+'位　自動昇格';body=divName(S.div-1)+'へ上がります。来季は相手が一段強くなります。';}
+ else if(S.div>1&&S.po&&S.po.won){moved=-1;head='プレーオフ優勝　昇格';body=divName(S.div)+' '+rank+'位からプレーオフを勝ち抜きました。';}
+ else if(S.div>1&&rank>=3&&rank<=6){head=divName(S.div)+' '+rank+'位　プレーオフ敗退';body='昇格はなりませんでした。来季こそ2位以内へ。';}
+ else if(champ){head='J1優勝';body='頂点に立ちました。ここから連覇を狙うこともできます。';}
+ else if(S.div<3&&rank>=n-2){moved=1;head=divName(S.div)+' '+rank+'位　降格';body=divName(S.div+1)+'へ落ちました。立て直しましょう。';}
+ else if(S.div===3&&rank>=n-1){head=divName(S.div)+' '+rank+'位';body='下位2クラブはJFLとの入れ替え対象。崖っぷちです。';}
+ else if(S.div===1&&rank<=3){head='J1 '+rank+'位';body='ACL出場圏。優勝まであと少しです。';}
+ else {head=divName(S.div)+' '+rank+'位';body='中位で終了。戦力の穴がそのまま順位に出ました。';}
+ $('r-verdict').className='verdict'+(champ||moved===-1?' gold':'');
+ $('r-verdict').innerHTML='<div class="kicker">'+divName(S.div)+' / SEASON '+S.year+'</div><h2>'+esc(head)+'</h2>'
+  +'<p>'+esc(S.teamName)+'　勝点'+S.pts+'（'+S.w+'勝'+S.d+'分'+S.l+'敗）　得失点'+((S.gf-S.ga)>0?'+':'')+(S.gf-S.ga)+'</p>'
+  +(S.po&&!S.po.won&&S.div>1?'<p style="margin-top:8px">プレーオフ勝者：'+esc(S.po.winner)+'</p>':'');
+
+ renderTeamStats();
+ var dh='';
+ for(var dd=1;dd<=3;dd++)dh+='<button class="chip'+(dd===S.div?' on':'')+'" data-d="'+dd+'">J'+dd+'</button>';
+ $('r-divtabs').innerHTML=dh;
+ renderDiv(S.div);
+ var gh='',k;
+ for(k in SG)gh+='<button class="chip'+(k===S.sg?' on':'')+'" data-g="'+k+'">'+SG[k].name+'</button>';
+ $('r-sqtabs').innerHTML=gh;
+ renderSquadStats();
+ renderLogSelect();
+ $('r-cuptabs').innerHTML='<button class="chip on" data-c="emp">天皇杯</button><button class="chip" data-c="lc">Jリーグカップ</button>';
+ renderCup('emp');
+ S.lastRank=rank;
+
+ var cupT=[];
+ if(S.cups.emp.champ&&S.cups.emp.champ.me)cupT.push('天皇杯優勝');
+ if(S.cups.lc.champ&&S.cups.lc.champ.me)cupT.push('Jリーグカップ優勝');
+ var note=[champ?'優勝':(moved===-1?(rank<=2?'昇格':'PO昇格'):moved===1?'降格':'')].concat(cupT).filter(Boolean).join('・');
+ S.history.push({year:S.year,div:S.div,rank:rank,pts:S.pts,note:note});
+ var hh='<tr><th>年</th><th>ディビジョン</th><th>順位</th><th>勝点</th><th></th></tr>';
+ for(var y=0;y<S.history.length;y++){
+  var e=S.history[y];
+  hh+='<tr'+(y===S.history.length-1?' class="me"':'')+'><td class="num">'+e.year+'</td><td>'+divName(e.div)+'</td><td class="num">'+e.rank+'</td><td class="num">'+e.pts+'</td><td style="color:var(--amber);white-space:normal">'+e.note+'</td></tr>';
+ }
+ $('r-history').innerHTML=hh;
+
+ prepareShare(moved,rank,n);
+ $('btn-off').textContent=(moved===-1?divName(S.div-1)+'のオフシーズンへ':moved===1?divName(S.div+1)+'のオフシーズンへ':'オフシーズンへ');
+ S.pendingMove=moved;
+ setTop(divName(S.div)+' '+rank+'位');
+ show('s-result');
+}
+
+/* ============ シェア ============ */
+var SHARE_URL='';
+var FJ='"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif';
+var FO='"Oswald","Zen Kaku Gothic New",sans-serif';
+function cupFinish(cup){
+ if(!cup)return '—';
+ if(cup.champ&&cup.champ.me)return '優勝';
+ for(var i=0;i<cup.res.length;i++)for(var j=0;j<cup.res[i].ms.length;j++){
+  var m=cup.res[i].ms[j];
+  if((m.h.me||m.a.me)&&!m.win.me){
+   var n=cup.res[i].ms.length*2;
+   return n===2?'準優勝':n===4?'ベスト4':n===8?'ベスト8':n===16?'ベスト16':cup.res[i].n+'敗退';
+  }
+ }
+ return '—';
+}
+function makeHeadline(moved,rank,n){
+ var dv=divName(S.div),up=divName(S.div-1),dn=divName(S.div+1);
+ var emp=cupFinish(S.cups.emp)==='優勝',lc=cupFinish(S.cups.lc)==='優勝';
+ var titles=[];if(rank===1)titles.push(dv);if(emp)titles.push('天皇杯');if(lc)titles.push('リーグ杯');
+ var prevJ1=0,lastJ1=false;
+ var H=S.history.length-1;
+ for(var i=0;i<H;i++){if(S.history[i].div===1&&S.history[i].rank===1){prevJ1++;lastJ1=(i===H-1);}}
+ var big,kicker,phrase,mood=1;
+ if(titles.length>=2){
+  var k=titles.length===3?'三冠':'二冠';
+  big=titles.join('・')+' '+k+'！！';kicker='歴史的快挙';phrase=titles.join('・')+' '+k+'達成';
+ }else if(S.div===1&&rank===1){
+  big=lastJ1?'J1連覇！！':'J1優勝！！';
+  kicker=prevJ1===0?'悲願の初優勝':(lastJ1?'王者の連覇':(prevJ1+1)+'度目の戴冠');phrase=kicker;
+ }else if(rank===1){big=dv+'優勝！！';kicker=up+'昇格決定';phrase=dv+'優勝で'+up+'昇格';}
+ else if(moved===-1&&rank===2){big=up+'昇格！！';kicker='自動昇格決定';phrase=up+'昇格決定';}
+ else if(moved===-1){big=up+'昇格！！';kicker='プレーオフを制す';phrase='PO制覇で'+up+'昇格';}
+ else if(emp||lc){var cn=emp?'天皇杯':'リーグ杯';big=cn+'制覇！！';kicker=dv+' '+rank+'位';phrase=cn+'制覇';}
+ else if(moved===1){big=dn+'降格…';kicker='無念';phrase='無念の'+dn+'降格';mood=-1;}
+ else if(S.div>1&&rank>=3&&rank<=6){big='PO敗退';kicker='あと一歩届かず';phrase=dv+' '+rank+'位 PO敗退';mood=-1;}
+ else if(S.div===1&&rank<=3){big='J1 '+rank+'位';kicker='ACL出場権獲得';phrase='ACL出場権獲得';}
+ else if(S.div===3&&rank>=n-1){big='J3 '+rank+'位';kicker='崖っぷち';phrase='J3 '+rank+'位 崖っぷちのシーズン';mood=-1;}
+ else if(S.div<3&&rank===n-3){big=dv+' '+rank+'位';kicker='残留を死守';phrase=dv+'残留を死守';}
+ else{big=dv+' '+rank+'位';kicker='シーズン終了';phrase=dv+' '+rank+'位でシーズン終了';mood=0;}
+ return {big:big,kicker:kicker,phrase:phrase,mood:mood};
+}
+function fitFont(ctx,text,maxW,size,weight,fam){
+ var z=size;
+ do{ctx.font=weight+' '+z+'px '+fam;if(ctx.measureText(text).width<=maxW)break;z-=2;}while(z>12);
+ return z;
+}
+function drawCard(hl,info){
+ var cv=document.createElement('canvas');cv.width=1200;cv.height=675;
+ var x=cv.getContext('2d'),i;
+ for(i=0;i<1200;i+=60){x.fillStyle=(i/60)%2?'#0C5C39':'#0A5233';x.fillRect(i,0,60,675);}
+ var X0=34,Y0=28,PW=480,PH=619;
+ x.fillStyle='rgba(0,0,0,.12)';x.fillRect(X0,Y0,PW,PH);
+ x.strokeStyle='rgba(242,245,238,.5)';x.lineWidth=2;
+ x.strokeRect(X0,Y0,PW,PH);
+ x.beginPath();x.moveTo(X0,Y0+PH/2);x.lineTo(X0+PW,Y0+PH/2);x.stroke();
+ x.beginPath();x.arc(X0+PW/2,Y0+PH/2,56,0,Math.PI*2);x.stroke();
+ x.strokeRect(X0+PW*.2,Y0,PW*.6,PH*.14);x.strokeRect(X0+PW*.2,Y0+PH*.86,PW*.6,PH*.14);
+ var slots=FORM[S.form].slots;
+ x.textAlign='center';x.textBaseline='middle';
+ for(i=0;i<slots.length;i++){
+  var p=playerById(S.slots[i]);if(!p)continue;
+  var px=X0+slots[i][1]/100*PW,py=Y0+slots[i][2]/100*PH-12;
+  x.beginPath();x.arc(px,py,24,0,Math.PI*2);x.fillStyle='#F2F5EE';x.fill();
+  x.fillStyle='#08211A';x.font='700 22px '+FO;x.fillText(String(ovrFor(p,slots[i][0])),px,py+1);
+  var nm=p.name.split(/[ ・]/)[0]+'('+p.age+')';
+  x.font='700 15px '+FJ;x.fillStyle='#fff';x.shadowColor='rgba(0,0,0,.8)';x.shadowBlur=5;
+  x.fillText(nm,px,py+39);x.shadowBlur=0;
+ }
+ var RX=552,RW=616,y;
+ x.textAlign='left';x.textBaseline='alphabetic';
+ x.fillStyle='#FFC21A';x.font='500 21px '+FO;x.fillText('FOOTBALL CHAMPION ROAD J　/　SEASON '+S.year,RX,64);
+ x.fillStyle='rgba(242,245,238,.9)';x.font='900 30px '+FJ;x.fillText('号外　'+hl.kicker,RX,118);
+ var hs=fitFont(x,hl.big,RW,100,'900',FJ);
+ x.fillStyle=hl.mood<0?'#F09A8D':'#FFC21A';x.fillText(hl.big,RX,122+hs);
+ y=122+hs+68;
+ fitFont(x,S.teamName,RW,42,'900',FJ);x.fillStyle='#F2F5EE';x.fillText(S.teamName,RX,y);
+ x.fillStyle='rgba(242,245,238,.4)';x.fillRect(RX,y+18,RW,2);
+ var lines=[info.rec,info.cup,info.tac,info.sc];
+ x.font='700 24px '+FJ;x.fillStyle='#F2F5EE';
+ for(i=0;i<lines.length;i++){fitFont(x,lines[i],RW,24,'700',FJ);x.fillText(lines[i],RX,y+62+i*40);}
+ var hy=y+62+lines.length*40+16,hist=S.history.slice(-12);
+ x.fillStyle='rgba(242,245,238,.6)';x.font='700 16px '+FJ;x.fillText('歩み',RX,hy+20);
+ for(i=0;i<hist.length;i++){
+  var e=hist[i],bx=RX+46+i*47;
+  x.fillStyle=e.div===1?'#FFC21A':e.div===2?'#8FD3FF':'rgba(242,245,238,.55)';
+  x.fillRect(bx,hy,42,28);
+  x.fillStyle='#08211A';x.font='700 15px '+FO;x.textAlign='center';
+  x.fillText('J'+e.div+(e.rank===1?'★':''),bx+21,hy+20);x.textAlign='left';
+ }
+ x.fillStyle='rgba(242,245,238,.75)';x.font='700 22px '+FO;x.textAlign='right';x.fillText('#FCRJ',1166,650);
+ return cv;
+}
+function xlen(t){var n=0;for(var i=0;i<t.length;i++){var c=t.charCodeAt(i);n+=(c<=0x10FF||(c>=0x2000&&c<=0x200D)||(c>=0x2010&&c<=0x201F)||(c>=0x2032&&c<=0x2037))?1:2;}return n;}
+function shareUrl(){return SHARE_URL||(/^https?:/.test(location.protocol)?location.href.split('#')[0]:'');}
+function buildShare(hl,info){
+ var head='【号外】'+hl.phrase+'　'+S.teamName+(hl.mood>0?'！！':hl.mood<0?'…':'');
+ var ls=[head,info.rec,info.cup,info.tac,info.sc,'#FCRJ'];
+ var lim=280-(shareUrl()?24:0);
+ var drop=[3,2,4];
+ while(xlen(ls.filter(Boolean).join('\n'))>lim&&drop.length)ls[drop.shift()]='';
+ return ls.filter(Boolean).join('\n');
+}
+function prepareShare(moved,rank,n){
+ var hl=makeHeadline(moved,rank,n);
+ var top=scorerList(S.div)[0],mine=S.squad.slice().sort(function(a,b){return b.s.g-a.s.g;})[0];
+ var gd=S.gf-S.ga;
+ var info={
+  rec:divName(S.div)+' '+rank+'位　勝点'+S.pts+'（'+S.w+'勝'+S.d+'分'+S.l+'敗）得失点'+(gd>0?'+':'')+gd,
+  cup:'天皇杯 '+cupFinish(S.cups.emp)+'　／　リーグ杯 '+cupFinish(S.cups.lc),
+  tac:S.form+'／'+TAC[S.tac].name+'　支配率'+(S.ts.poss/(S.ts.n||1)).toFixed(1)+'%',
+  sc:'最多得点　'+(mine?mine.name+' '+mine.s.g+'点':'—')+(top&&top.me&&mine&&top.n===mine.name?'（得点王）':'')};
+ var txt=buildShare(hl,info);
+ S.shareText=txt;S.card=null;
+ $('r-share').textContent=txt;
+ var u=shareUrl();
+ $('btn-x').href='https://twitter.com/intent/tweet?text='+encodeURIComponent(txt)+(u?'&url='+encodeURIComponent(u):'');
+ $('btn-copy').setAttribute('data-txt',txt+(u?'\n'+u:''));
+ var render=function(){
+  try{S.card=drawCard(hl,info);$('r-card').src=S.card.toDataURL('image/png');}catch(e){$('r-card').style.display='none';}
+ };
+ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(render);else render();
+ var canFile=false;
+ try{canFile=!!(navigator.canShare&&navigator.canShare({files:[new File([''],'a.png',{type:'image/png'})]}));}catch(e){}
+ $('r-sharehint').textContent=canFile?'「画像付きでシェア」でXを選ぶと画像付きで投稿できます。「画像を保存」は共有メニューの「画像を保存」から写真に保存できます。'
+  :'「画像を保存」でダウンロードできます。画像の長押し（PCは右クリック）でも保存できます。';
+}
+function saveImage(){
+ if(!S.card)return;
+ S.card.toBlob(function(blob){
+  var name='fcrj-season'+S.year+'.png';
+  try{
+   var f=new File([blob],name,{type:'image/png'});
+   if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(){});return;}
+  }catch(e){}
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},2000);
+ },'image/png');
+}
+function shareImage(){
+ if(!S.card)return;
+ S.card.toBlob(function(blob){
+  var u=shareUrl(),text=S.shareText+(u?'\n'+u:'');
+  try{
+   var f=new File([blob],'fcrj-season'+S.year+'.png',{type:'image/png'});
+   if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],text:text}).catch(function(){});return;}
+  }catch(e){}
+  window.open($('btn-x').href,'_blank');
+ },'image/png');
+}
+
+/* ============ オフシーズン ============ */
+function poWinnerRow(rows){
+ if(rows.length<6)return rows[2]||rows[0];
+ var s3=rows[2],s4=rows[3],s5=rows[4],s6=rows[5];
+ s3.rk=3;s4.rk=4;s5.rk=5;s6.rk=6;
+ var a=poMatch(s3,s6).win,b=poMatch(s4,s5).win;
+ return poMatch(a.rk<b.rk?a:b,a.rk<b.rk?b:a).win;
+}
+function aiPromotion(){
+ var plan=[],d,i;
+ for(d=3;d>=2;d--){
+  var low=(d===S.div)?S.rows:divTable(d);
+  var up=(d-1===S.div)?S.rows:divTable(d-1);
+  var goUp=[low[0],low[1]];
+  var po=S.poAll?S.poAll[d]:null;
+  goUp.push(po?{c:po.winClub}:poWinnerRow(low));
+  plan.push({d:d,up:goUp,down:up.slice(-3)});
+ }
+ var j3=(S.div===3)?S.rows:divTable(3);
+ var last=j3[j3.length-1];
+ for(var k=0;k<plan.length;k++){
+  var pl=plan[k];
+  for(i=0;i<pl.up.length;i++)if(pl.up[i]&&pl.up[i].c)pl.up[i].c.div=pl.d-1;
+  for(i=0;i<pl.down.length;i++)if(pl.down[i]&&pl.down[i].c)pl.down[i].c.div=pl.d;
+ }
+ S.swap=null;
+ if(last&&last.c&&S.stock.length){
+  var out=last.c,idx=S.pool.indexOf(out);
+  var inc=S.stock.splice(rnd(S.stock.length),1)[0];
+  if(idx>-1)S.pool.splice(idx,1);
+  out.div=0;S.stock.push(out);
+  inc.div=3;S.pool.push(inc);
+  S.swap={out:out.name,'in':inc.name};
+ }
+ var all=S.pool.concat(S.stock,S.univs,[S.haneda]);
+ for(var z=0;z<all.length;z++){
+  var c=all[z];
+  c.dev=c.dev*.55+gauss()*.9;
+  c.st=clamp(c.core+c.dev+gauss()*.6,52,92);
+  if(Math.random()<.22)c.form=pick(FKEYS);
+  if(Math.random()<.18)c.tac=pick(TKEYS);
+ }
+}
+function ageSquad(){
+ var lines=[],i;
+ for(i=0;i<S.squad.length;i++){
+  var p=S.squad[i],before=p.ovr,ch=0,k;
+  p.age++;
+  for(k in p.c)p.c[k]+=p.s[k];
+  if(p.prospect&&p.ovr<p.pot)ch=2+rnd(5);
+  else if(p.age<=23)ch=1+rnd(4);
+  else if(p.age<=27)ch=rnd(3)-1;
+  else if(p.age<=30)ch=rnd(3)-2;
+  else if(p.age<=33)ch=-(1+rnd(3));
+  else ch=-(2+rnd(5));
+  if(ch>0&&p.ovr>=p.pot)ch=rnd(2);
+  p.mod+=ch;p.temp=0;p.slumpUntil=0;p.ovr=ovrFor(p,p.pos);
+  if(Math.abs(p.ovr-before)>=2)lines.push({n:p.name,age:p.age,from:before,to:p.ovr});
+ }
+ lines.sort(function(a,b){return Math.abs(b.to-b.from)-Math.abs(a.to-a.from);});
+ var h='';
+ for(var j=0;j<Math.min(lines.length,8);j++){
+  var e=lines[j],up=e.to>e.from;
+  h+='<li><b>'+esc(e.n)+'</b>（'+e.age+'歳）<span class="'+(up?'up':'dn')+'">'+(up?'+':'')+(e.to-e.from)+' → '+e.to+'</span></li>';
+ }
+ $('o-growth').innerHTML=h||'<li>目立った変化はありませんでした。</li>';
+}
+var LVP={hi:.75,mid:.45,lo:.2},LVJ={hi:'高',mid:'中',lo:'低'};
+function stayLevel(p,o){
+ var x=0;
+ if(o.ov)x-=2;else if(o.fromDiv<S.div)x-=(S.div-o.fromDiv);else x+=.5;
+ if(S.lastMoved===-1)x+=1;
+ if(S.lastMoved===1)x-=1;
+ if(S.lastRank&&S.lastRank<=3)x+=.5;
+ if(p.orig)x+=.5;
+ if(S.year-p.joined>=3)x+=.5;
+ if(S.slots.indexOf(p.id)>-1)x+=.5;else x-=1;
+ if(p.age>=30)x+=1;else if(p.age<=23)x-=.5;
+ return x>=1?'hi':(x>=-.5?'mid':'lo');
+}
+function genOffers(){
+ var offers=[],avg=divAvg(S.div),used={},i;
+ var pool=S.squad.filter(function(p){return p.age>=19&&p.age<=30;});
+ function w(p){if(used[p.id])return 0;var g=Math.max(0,p.ovr-(avg-2));return Math.pow(g,1.5)*(p.age<=28?1:.5)*(1+p.s.g/15);}
+ var n=0,rel=S.lastMoved===1;
+ if(rel){for(i=0;i<3;i++)if(Math.random()<.8)n++;}
+ else if(Math.random()<(S.lastMoved===-1?.4:.55))n=1;
+ for(i=0;i<n;i++){
+  var tot=0,j;for(j=0;j<pool.length;j++)tot+=w(pool[j]);
+  if(tot<=0)break;
+  var r=Math.random()*tot,tg=null;
+  for(j=0;j<pool.length;j++){r-=w(pool[j]);if(r<=0){tg=pool[j];break;}}
+  if(!tg)tg=pool[pool.length-1];
+  used[tg.id]=1;
+  var fd=S.div>1?S.div-1:1,cl=divClubs(fd);
+  cl=cl.slice().sort(function(a,b){return b.st-a.st;}).slice(0,S.div>1?20:8);
+  offers.push({p:tg,club:pick(cl).name,fromDiv:fd,ov:false,state:'open'});
+ }
+ if(S.div===1){
+  var el=S.squad.filter(function(p){return p.ovr>=80&&p.age<=27&&!used[p.id];}).sort(function(a,b){return b.ovr-a.ovr;});
+  if(el.length&&Math.random()<.35)offers.push({p:el[0],club:pick(OVERSEAS),fromDiv:0,ov:true,state:'open'});
+ }
+ for(i=0;i<offers.length;i++)offers[i].lv=stayLevel(offers[i].p,offers[i]);
+ return offers;
+}
+function renderOffers(){
+ var h='';
+ for(var i=0;i<S.offers.length;i++){
+  var o=S.offers[i],p=o.p;
+  h+='<div class="offer'+(o.ov?' ov':'')+'" data-i="'+i+'">'
+   +'<div class="who">'+esc(p.name)+'<small>'+POSJ[p.pos]+'・'+p.age+'歳・総合'+p.ovr+'・昨季'+p.s.g+'得点'+(S.slots.indexOf(p.id)>-1?'・スタメン':'・控え')+'</small></div>'
+   +'<div class="from">'+(o.ov?'🌍 ':'')+esc(o.club)+'から正式オファー</div>'
+   +'<div style="font-size:13px">残留の見込み：<span class="lv '+o.lv+'">'+LVJ[o.lv]+'</span></div>';
+  if(o.state==='open')h+='<div class="btnrow" style="margin-top:10px"><button class="btn small" data-act="keep">残留交渉</button><button class="btn ghost small" data-act="let">送り出す</button></div>';
+  else h+='<div class="res">'+({stay:'✅ 交渉成立。チームに残ります。',left:'👋 送り出しました。見返りで候補の質が上がります。',fail:'❌ 交渉決裂。移籍が決まりました（見返りは半分）。'}[o.state])+'</div>';
+  h+='</div>';
+ }
+ $('o-offers').innerHTML=h;
+}
+function compVal(p,ov,failed){return clamp((p.ovr-64)*.35,0,7)*(ov?1.5:1)*(failed?.5:1);}
+function resolveOffer(i,act){
+ var o=S.offers[i];if(!o||o.state!=='open')return;
+ if(act==='keep'&&Math.random()<LVP[o.lv])o.state='stay';
+ else{
+  o.state=act==='keep'?'fail':'left';
+  var idx=S.squad.indexOf(o.p);if(idx>-1)S.squad.splice(idx,1);
+  S.holes.push(o.p.pos);S.comp+=compVal(o.p,o.ov,o.state==='fail');
+  S.departed.push(o.p.name+'（'+o.club+'へ）');
+ }
+ renderOffers();renderOffSquad();
+ if(S.offers.every(function(x){return x.state!=='open';}))genCands();
+}
+function renderOffSquad(){
+ var sq=sortByPos(S.squad),rh='',rcur='';
+ for(var r=0;r<sq.length;r++){
+  var rp=sq[r],inXI=S.slots.indexOf(rp.id)>-1;
+  if(rp.pos!==rcur){rh+='<li class="rhead"><span class="rp">'+POSJ[rp.pos]+'</span><span>'+POSNAME[rp.pos]+'</span><span></span></li>';rcur=rp.pos;}
+  rh+='<li><span class="rp"></span><span>'+esc(rp.name)+'<small>'+rp.age+'歳'+(rp.pos2?' ・'+POSJ[rp.pos2]+'も◎':'')+(inXI?' ・スタメン':' ・控え')+'　通算'+rp.c.g+'得点</small></span><span class="rv">'+rp.ovr+'</span></li>';
+ }
+ $('o-squad').innerHTML=rh;
+ $('o-squad-sub').textContent=S.squad.length+'人'+(S.holes.length?'（引退・移籍で'+S.holes.length+'人減）':'')+'。この顔ぶれを見ながら候補を選びます。';
+}
+function openOffseason(){
+ var moved=S.pendingMove||0;
+ S.lastMoved=moved;
+ aiPromotion();
+ if(moved)S.div=clamp(S.div+moved,1,3);
+ S.pendingMove=0;
+ S.year++;
+ ageSquad();
+ S.holes=[];S.comp=0;S.departed=[];
+ var ret=[],i;
+ for(i=S.squad.length-1;i>=0;i--){
+  var p=S.squad[i],why='';
+  if(p.retiring)why='age';
+  else if(p.major>=2&&Math.random()<(p.major>=3?.8:.45))why='inj';
+  if(why){ret.push({p:p,why:why});S.holes.push(p.pos);S.squad.splice(i,1);}
+ }
+ var rh='';
+ for(i=0;i<ret.length;i++){
+  var q=ret[i].p;
+  rh+='<li><b>'+esc(q.name)+'</b>（'+POSJ[q.pos]+'・'+q.age+'歳・通算'+q.c.g+'得点）'
+   +(ret[i].why==='inj'?'<span class="dn">大怪我の影響で現役引退を決断</span>':'<span class="dn">現役引退</span>')+'</li>';
+ }
+ $('o-retire').innerHTML=rh;
+ $('o-retire-sec').style.display=ret.length?'block':'none';
+ $('o-title').textContent=S.year+'年目に向けて';
+ $('o-sub').textContent='全員が1歳年を取りました。来季は'+divName(S.div)+'です。'
+  +(S.swap?'　／　'+S.swap.out+'がJ3から去り、'+S.swap['in']+'が新規参入。':'');
+ S.offers=genOffers();
+ $('o-offer-sec').style.display=S.offers.length?'block':'none';
+ renderOffers();
+ renderOffSquad();
+ $('o-cand-sec').style.display='none';
+ setTop(divName(S.div)+'　'+S.year+'年目');
+ show('s-off');
+ if(!S.offers.length)genCands();
+}
+function genCands(){
+ var base={3:3,2:4,1:5}[S.div],bonus=(3-S.div)*3.5+Math.min(S.comp,9),i;
+ S.cands=[];S.candTag=[];
+ for(i=0;i<base;i++){S.cands.push(makePlayer(bonus));S.candTag.push('');}
+ for(i=0;i<S.holes.length;i++){S.cands.push(makePlayer(bonus,S.holes[i]));S.candTag.push('穴埋め候補（'+S.holes[i]+'）');}
+ var r16=(S.cups&&S.cups.emp&&S.cups.emp.r16)||[];
+ for(i=0;i<r16.length;i++)if(r16[i].univ){S.cands.push(makeProspect(r16[i].name));S.candTag.push('特別指定・天皇杯ベスト16');}
+ S.picked=[];S.cap=3+S.holes.length;S.minPick=S.holes.length;
+ var h='';
+ for(i=0;i<S.cands.length;i++){
+  h+='<div class="cand" data-i="'+i+'">'+(S.candTag[i]?'<div class="counter" style="margin:0 0 6px">'+S.candTag[i]+'</div>':'')
+   +cardHTML(S.cands[i])+'<button class="btn ghost small" data-pick="'+i+'">獲得する</button></div>';
+ }
+ $('o-cands').innerHTML=h;
+ $('o-cand-sub').textContent='候補'+S.cands.length+'人（'+divName(S.div)+'枠'+base+'人'
+  +(S.holes.length?'＋穴埋め'+S.holes.length+'人':'')+'）から最大'+S.cap+'人まで。'
+  +(S.minPick?'引退・移籍の穴があるので最低'+S.minPick+'人は獲得が必要です。':'')
+  +(S.comp>0?'移籍の見返りで候補の質が上がっています。':'')+'もう一度タップすれば取り消せます。';
+ $('o-cand-sec').style.display='block';
+ updateCandCount();
+}
+function updateCandCount(){
+ var n=S.picked.length,rel=n-S.holes.length;
+ $('o-count').textContent='獲得 '+n+' / '+S.cap+(S.minPick?'（最低'+S.minPick+'人）':'');
+ $('btn-tolist').disabled=n<S.minPick;
+ $('btn-tolist').textContent=n===0?'補強せずに次へ':(n<S.minPick?'あと'+(S.minPick-n)+'人獲得が必要':(rel>0?n+'人を獲得して放出へ':n+'人を獲得して次へ'));
+}
+function openRelease(){
+ var need=S.picked.length-S.holes.length;
+ if(need<=0){startNextSeason();return;}
+ S.releasing=[];
+ var ins=S.picked.map(function(i){return S.cands[i];});
+ $('rl-sub').textContent='獲得'+S.picked.length+'人'+(S.holes.length?'－穴'+S.holes.length+'人':'')+'で、'+need+'人を放出します。黄色の「IN」が今回獲得する選手です。同じポジションの選手と比べて選べます。';
+ var sq=sortByPos(S.squad),inS=sortByPos(ins),order=['GK','CB','SB','DM','CM','OM','WG','CF'],h='',g,i;
+ h+='<li class="insum"><span class="inbadge">IN</span>';
+ for(i=0;i<inS.length;i++)h+='<span class="inchip">'+posLabel(inS[i])+' '+esc(inS[i].name)+' <b>'+inS[i].ovr+'</b></span>';
+ h+='</li>';
+ for(g=0;g<order.length;g++){
+  var ps=order[g],mine=sq.filter(function(p){return p.pos===ps;}),incoming=inS.filter(function(p){return p.pos===ps;});
+  if(!mine.length&&!incoming.length)continue;
+  h+='<li class="phead"><span class="rp">'+ps+'</span>'+POSNAME[ps]+'</li>';
+  for(i=0;i<incoming.length;i++){
+   var q=incoming[i],tg=tags(q).map(function(t){return t[0];}).join('・');
+   h+='<li class="inrow"><span class="inbadge">IN</span><span class="rp">'+posLabel(q)+'</span>'
+    +'<span>'+esc(q.name)+'<small>'+q.age+'歳'+(tg?' ・'+tg:'')+'</small></span><span class="rv">'+q.ovr+'</span></li>';
+  }
+  for(i=0;i<mine.length;i++){
+   var p=mine[i],inXI=S.slots.indexOf(p.id)>-1;
+   h+='<li><button class="pick" data-id="'+p.id+'"><span class="box"></span><span class="rp">'+posLabel(p)+'</span>'
+    +'<span>'+esc(p.name)+'<small>'+p.age+'歳'+(inXI?' ・スタメン':' ・控え')+'　通算'+p.c.g+'得点</small></span>'
+    +'<span class="rv">'+p.ovr+'</span></button></li>';
+  }
+ }
+ $('rl-list').innerHTML=h;
+ updateReleaseCount();
+ show('s-release');
+}
+function updateReleaseCount(){
+ var need=S.picked.length-S.holes.length;
+ $('rl-count').textContent='放出 '+S.releasing.length+' / '+need;
+ $('btn-release').disabled=S.releasing.length!==need;
+}
+function startNextSeason(){
+ var i,j;
+ for(i=0;i<S.releasing.length;i++)
+  for(j=0;j<S.squad.length;j++)if(S.squad[j].id===S.releasing[i]){S.squad.splice(j,1);break;}
+ for(i=0;i<S.picked.length;i++){var np=S.cands[S.picked[i]];np.joined=S.year;S.squad.push(np);}
+ S.releasing=[];S.picked=[];S.holes=[];
+ openFormation();
+}
+/* ============ 配線 ============ */
+$('btn-start').addEventListener('click',function(){buildPool();startDraft();});
+$('btn-take').addEventListener('click',take);
+$('btn-pass').addEventListener('click',passPlayer);
+$('btn-sqnext').addEventListener('click',function(){
+ openFormation();
+});
+$('f-form').addEventListener('change',function(){S.form=this.value;autoAssign();renderProfile();});
+$('f-tac').addEventListener('change',function(){S.tac=this.value;renderProfile();});
+$('btn-auto').addEventListener('click',autoAssign);
+$('btn-fdone').addEventListener('click',function(){if(S.year===1)show('s-setup');else kickoff();});
+$('btn-kickoff').addEventListener('click',kickoff);
+$('btn-skip').addEventListener('click',skip);
+$('btn-off').addEventListener('click',openOffseason);
+$('btn-po-next').addEventListener('click',renderResult);
+$('r-divtabs').addEventListener('click',function(e){
+ var b=e.target.closest?e.target.closest('.chip'):null;if(!b)return;
+ var cs=$('r-divtabs').querySelectorAll('.chip'),i;
+ for(i=0;i<cs.length;i++)cs[i].classList.toggle('on',cs[i]===b);
+ renderDiv(parseInt(b.getAttribute('data-d'),10));
+});
+$('r-sqtabs').addEventListener('click',function(e){
+ var b=e.target.closest?e.target.closest('.chip'):null;if(!b)return;
+ var cs=$('r-sqtabs').querySelectorAll('.chip'),i;
+ for(i=0;i<cs.length;i++)cs[i].classList.toggle('on',cs[i]===b);
+ S.sg=b.getAttribute('data-g');renderSquadStats();
+});
+$('r-logyear').addEventListener('change',function(){renderLog(parseInt(this.value,10));});
+$('o-cands').addEventListener('click',function(e){
+ var b=e.target.closest?e.target.closest('[data-pick]'):null;if(!b)return;
+ var i=parseInt(b.getAttribute('data-pick'),10),at=S.picked.indexOf(i),box=b.parentNode;
+ if(at>-1){S.picked.splice(at,1);box.classList.remove('picked');b.textContent='獲得する';b.className='btn ghost small';}
+ else{if(S.picked.length>=S.cap)return;S.picked.push(i);box.classList.add('picked');b.textContent='獲得ずみ ・ タップで取り消し';b.className='btn small';}
+ updateCandCount();
+});
+$('btn-tolist').addEventListener('click',openRelease);
+$('rl-list').addEventListener('click',function(e){
+ var b=e.target.closest?e.target.closest('.pick'):null;if(!b)return;
+ var id=parseInt(b.getAttribute('data-id'),10),at=S.releasing.indexOf(id);
+ if(at>-1){S.releasing.splice(at,1);b.classList.remove('on');}
+ else{if(S.releasing.length>=S.picked.length-S.holes.length)return;S.releasing.push(id);b.classList.add('on');}
+ updateReleaseCount();
+});
+$('btn-release').addEventListener('click',startNextSeason);
+$('btn-shareimg').addEventListener('click',shareImage);
+$('btn-saveimg').addEventListener('click',saveImage);
+$('o-offers').addEventListener('click',function(e){
+ var b=e.target.closest?e.target.closest('[data-act]'):null;if(!b)return;
+ var box=b.closest('.offer');resolveOffer(parseInt(box.getAttribute('data-i'),10),b.getAttribute('data-act'));
+});
+$('r-cuptabs').addEventListener('click',function(e){
+ var b=e.target.closest?e.target.closest('.chip'):null;if(!b)return;
+ var cs=$('r-cuptabs').querySelectorAll('.chip'),i;
+ for(i=0;i<cs.length;i++)cs[i].classList.toggle('on',cs[i]===b);
+ renderCup(b.getAttribute('data-c'));
+});
+$('btn-rlback').addEventListener('click',function(){S.releasing=[];show('s-off');});
+$('btn-again').addEventListener('click',function(){location.reload();});
+$('btn-copy').addEventListener('click',function(){
+ var t=this.getAttribute('data-txt'),self=this;
+ var done=function(){self.textContent='コピーしました';setTimeout(function(){self.textContent='テキストをコピー';},1800);};
+ try{
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,function(){fb(t,done);});
+  else fb(t,done);
+ }catch(e){fb(t,done);}
+});
+function fb(t,done){
+ var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';
+ document.body.appendChild(ta);ta.select();
+ try{document.execCommand('copy');done();}catch(e){}
+ document.body.removeChild(ta);
+}
+})();
+</script>
+</body>
+</html>
