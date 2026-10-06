@@ -342,6 +342,21 @@ footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-si
   background:#b3321f;color:#fff;border-radius:6px;padding:12px 14px;font-size:13.5px;line-height:1.6;box-shadow:0 10px 30px rgba(0,0,0,.4);}
 .savewarn[hidden]{display:none;}
 .savewarn b{display:block;font-size:11px;opacity:.8;margin-top:4px;}
+.sec.foldable>h2{cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:0;user-select:none;-webkit-tap-highlight-color:transparent;}
+.sec.foldable>h2::after{content:"＋";font-family:"Oswald",sans-serif;font-weight:700;color:var(--amber);font-size:20px;margin-left:10px;}
+.sec.foldable.open>h2::after{content:"－";}
+.sec.foldable>h2{padding:2px 0;}
+.sec.foldable.open>h2{margin-bottom:12px;}
+.sec.foldable:not(.open)>.secbody{display:none;}
+.sec.foldable{margin-top:0;border-top:1px solid var(--line);}
+.sec.foldable:not(.open){padding-top:13px;padding-bottom:13px;}
+.sec.foldable.open{padding-top:13px;}
+.b11pitch{background:repeating-linear-gradient(90deg,#0A5233 0 40px,#0C5C39 40px 80px);border:1px solid rgba(242,245,238,.4);border-radius:4px;padding:10px 4px;}
+.b11row{display:flex;justify-content:space-around;margin:8px 0;}
+.b11p{flex:1;text-align:center;padding:0 2px;}
+.b11p b{display:block;font-size:12px;line-height:1.3;}
+.b11p span{display:block;font-size:9.5px;opacity:.65;line-height:1.3;}
+.b11p.me b{color:var(--amber);}
 .cardimg{display:block;width:100%;margin-top:12px;border-radius:4px;border:1px solid var(--line);}
 </style>
 </head>
@@ -480,6 +495,11 @@ footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-si
     <div class="overflow"><table class="tbl" id="r-scorers"></table></div>
   </div>
   <div class="sec">
+    <h2>ベストイレブン</h2>
+    <div class="chips" id="r-b11tabs"></div>
+    <div id="r-b11"></div>
+  </div>
+  <div class="sec">
     <h2>選手成績</h2>
     <p class="sub" style="margin:0">選手をタップすると、詳細と自慢カードが見られます。</p>
     <div class="chips" id="r-sqtabs"></div>
@@ -491,6 +511,7 @@ footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-si
     <div class="log" id="r-log" style="max-height:52vh"></div>
   </div>
   <div class="sec"><h2>クラブの歩み</h2><div class="overflow"><table class="tbl" id="r-history"></table></div></div>
+  <div class="sec"><h2>クラブの殿堂</h2><div id="r-hof"></div></div>
   <button class="btn cta" id="btn-off">オフシーズンへ</button>
   <div class="sec">
     <h2>結果を残す</h2>
@@ -598,7 +619,7 @@ footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-si
   </div>
   <a class="btn ghost small" id="btn-contact" href="https://x.com/kanasama_united" target="_blank" rel="noopener">感想・不具合報告はこちら<small>X @kanasama_united</small></a>
   <p class="disc">このゲームはフィクションです。登場するクラブ・団体・人物の名称は架空のものであり、実在のものとは関係ありません。</p>
-  <p class="ver">Football Champion Road J　v2.1.3</p>
+  <p class="ver">Football Champion Road J　v2.3.0</p>
 </div>
 </div>
 <script>
@@ -711,6 +732,7 @@ function aptP(p,slot){
  return v;
 }
 function posCount(p){var n=1;if(p.pos2)n++;if(p.pos3)n++;if(p.pos==='DM'||p.pos==='CM')n=Math.max(n,2);return n;}
+function tenure(p){return Math.max(1,S.year-(p.joined||S.year)+1)+'年目';}
 function posLabel(p){return POSJ[p.pos]+(p.pos2?'/'+POSJ[p.pos2]:'')+(p.pos3?'/'+POSJ[p.pos3]:'');}
 function aptMulP(p,slot){
  if(slot==='GK'&&p.pos!=='GK')return .30;
@@ -924,6 +946,7 @@ function makeProspect(u){
 }
 function tags(p){
  var o=[];
+ if(p.lgd!=null)o.push([p.lgdKind==='young'?'原石':'レジェンド',1]);
  if(p.star)o.push(['スター',1]);
  if(p.legend)o.push([p.legend,1]);
  if(p.prospect)o.push(['有望株',1]);
@@ -976,7 +999,7 @@ function newClub(d,div){
  var core=coreOf(d.star),dev=gauss()*1.2;
  S.cid=(S.cid||0)+1;
  return {id:'c'+S.cid,name:d.name,core:core,dev:dev,st:core+dev,div:div,
-  ace:uniqueName(),ace2:uniqueName(),aceG:0,ace2G:0,pm:uniqueName(),gk:uniqueName(),pmA:0,
+  ace:uniqueName(),ace2:uniqueName(),aceG:0,ace2G:0,pm:uniqueName(),gk:uniqueName(),pmA:0,df1:uniqueName(),df2:uniqueName(),
   form:pick(FKEYS),tac:pick(TKEYS),pts:0,gf:0,ga:0,jit:0};
 }
 function buildPool(){
@@ -986,6 +1009,7 @@ function buildPool(){
  S.univs=parseDef(UNIVDEF).map(function(x){var c=newClub(x,0);c.univ=true;return c;});
  S.haneda=newClub(parseDef(HANEDADEF)[0],0);S.haneda.guest=true;
  buildACLClubs();
+ S.leg={};legendTick(.08);
 }
 function divClubs(d){var o=[],i;for(i=0;i<S.pool.length;i++)if(S.pool[i].div===d)o.push(S.pool[i]);return o;}
 function divAvg(d){var c=divClubs(d),s=0,i;for(i=0;i<c.length;i++)s+=c[i].st;return s/c.length;}
@@ -1001,7 +1025,7 @@ function simDivision(d){
   c.jit=gauss()*2;c.aceG=0;c.ace2G=0;
   c.aceShare=.20+Math.random()*.15;c.ace2Share=.09+Math.random()*.07;
   c.pmShare=.12+Math.random()*.08;c.pmA=0;
-  if(!c.pm)c.pm=uniqueName();if(!c.gk)c.gk=uniqueName();
+  if(!c.pm)c.pm=uniqueName();if(!c.gk)c.gk=uniqueName();if(!c.df1)c.df1=uniqueName();if(!c.df2)c.df2=uniqueName();
  }
 }
 function buildSeason(){
@@ -1053,7 +1077,7 @@ function rosterHTML(list,role){
   var p=list[i];
   if(p.pos!==cur){h+='<li class="rhead"><span class="rp">'+POSJ[p.pos]+'</span><span>'+POSNAME[p.pos]+'</span><span></span></li>';cur=p.pos;}
   var bench=role&&S.slots.length&&S.slots.indexOf(p.id)<0;
-  h+='<li data-pid="'+p.id+'"><span class="rp"></span><span>'+(p.foreign?natOf(p).f+' ':'')+esc(p.name)+'<small>'+p.age+'歳'+(p.pos2?' ・'+POSJ[p.pos2]+(p.pos3?'/'+POSJ[p.pos3]:'')+'も◎':'')+(role?(bench?' ・控え':' ・スタメン'):'')+'</small></span><span class="rv">'+p.ovr+'</span></li>';
+  h+='<li data-pid="'+p.id+'"><span class="rp"></span><span>'+(p.foreign?natOf(p).f+' ':'')+esc(p.name)+'<small>'+p.age+'歳'+(p.pos2?' ・'+POSJ[p.pos2]+(p.pos3?'/'+POSJ[p.pos3]:'')+'も◎':'')+(role?(bench?' ・控え':' ・スタメン')+'・'+tenure(p):'')+'</small></span><span class="rv">'+p.ovr+'</span></li>';
  }
  return h;
 }
@@ -1427,7 +1451,7 @@ function playRound(){
  ts.n++;ts.gf+=gf;ts.ga+=ga;if(ga===0)ts.cs++;
  ts.pass+=passes;ts.poss+=poss;ts.dist+=tm.dist;ts.spr+=tm.spr;ts.sh+=tm.sh;
  S.log.push({t:'m',r:S.round,h:fx.home,n:club.name,gf:gf,ga:ga,res:res,
-  po:Math.round(poss),ps:passes,sh:tm.sh,fo:club.form,tc:(TAC[club.tac]||TAC.poss).name,al:alumniTag(club.name)});
+  po:Math.round(poss),ps:passes,sh:tm.sh,fo:club.form,tc:(TAC[club.tac]||TAC.poss).name,al:alumniTag(club.name)+legendTag(club)});
  var row=document.createElement('div');row.className='row';
  row.innerHTML=logHTML(S.log[S.log.length-1]);
  $('se-log').appendChild(row);$('se-log').scrollTop=$('se-log').scrollHeight;
@@ -1632,7 +1656,7 @@ function runCupStage(cup){
 function cupLog(cup,st,m){
  var home=!!m.h.me,opp=home?m.a:m.h;
  var gf=home?m.gh+(m.gh2||0):m.ga+(m.ga2||0),ga=home?m.ga+(m.ga2||0):m.gh+(m.gh2||0);
- var e={t:'c',r:S.round,cup:cup.name,st:st.n,n:opp.name,gf:gf,ga:ga,res:m.win.me?'w':'l',pk:!!m.pk,legs:m.legs,home:home,neutral:m.neutral,al:alumniTag(opp.name)};
+ var e={t:'c',r:S.round,cup:cup.name,st:st.n,n:opp.name,gf:gf,ga:ga,res:m.win.me?'w':'l',pk:!!m.pk,legs:m.legs,home:home,neutral:m.neutral,al:alumniTag(opp.name)+legendTag(opp)};
  S.log.push(e);
  var row=document.createElement('div');row.className='row cup';row.innerHTML=logHTML(e);
  $('se-log').appendChild(row);$('se-log').scrollTop=$('se-log').scrollHeight;
@@ -1748,13 +1772,22 @@ function jSlots(){
  [D,P,T].forEach(function(a){a.forEach(function(c){c.cc='JP';c.reg='east';});});
  return {D:D,P:P,T:T};
 }
+function empWinnerJ1Rank(){
+ var c=S.cups&&S.cups.emp&&S.cups.emp.champ;
+ if(!c||c.me||S.div!==1||!S.rows)return 0;
+ for(var i=0;i<S.rows.length;i++)if(S.rows[i].name===c.name)return i+1;
+ return 0;
+}
 function aclQualify(rank,cupEmp){
  var e=null;
+ S.aclBump=false;
  if(S.div===1){
   if(rank<=3)e='ACLE';
   else if(rank<=5)e='PRE';
  }
  if(!e&&cupEmp)e='ACL2';
+ // 天皇杯覇者がJ1 5位以内なら、空いたACL2枠はJ1 6位へ繰り上がり
+ if(!e&&S.div===1&&rank===6){var er=empWinnerJ1Rank();if(er>=1&&er<=5){e='ACL2';S.aclBump=true;}}
  if(S.aclWin==='ACLE')e='ACLE';
  else if(S.aclWin==='ACL2'&&e!=='ACLE')e='PRE';
  return e;
@@ -2283,7 +2316,7 @@ function finalizeSeason(){
  S.lastACL=aclRes;
   var note=[champ?'優勝':(moved===-1?(rank<=2?'昇格':'PO昇格'):moved===1?'降格':'')].concat(cupT).filter(Boolean).join('・');
  S.aclWhyNow=S.aclWhy||'';
- S.aclWhy=nextE?(S.div===1&&rank<=5?'J1 '+rank+'位':(cupT.indexOf('天皇杯優勝')>-1?'天皇杯優勝':(S.aclWin?S.aclWin+'優勝':''))):'';
+ S.aclWhy=nextE?(S.div===1&&rank<=5?'J1 '+rank+'位':(cupT.indexOf('天皇杯優勝')>-1?'天皇杯優勝':(S.aclBump?'天皇杯枠の繰り上がり・J1 6位':(S.aclWin?S.aclWin+'優勝':'')))):'';
  var sc=scorerList(S.div);
  S.awards=[];
  if(sc.length&&sc[0].me)S.squad.forEach(function(q){if(q.name===sc[0].n){q.titles.push(S.year+'年目 '+divName(S.div)+'得点王（'+q.s.g+'点）');S.awards.push({k:'goal',pid:q.id,v:q.s.g,d:S.div});}});
@@ -2293,6 +2326,12 @@ function finalizeSeason(){
  if(cl.length&&cl[0].me)S.squad.forEach(function(q){if(q.name===cl[0].n){q.titles.push(S.year+'年目 '+divName(S.div)+'最多完封GK（'+q.s.cs+'試合）');S.awards.push({k:'cs',pid:q.id,v:q.s.cs,d:S.div});}});
  var hon=[];if(rank===1)hon.push(divName(S.div)+'優勝');hon=hon.concat(cupT);
  if(hon.length)S.squad.forEach(function(q){if(q.s.app>0)q.hon.push(S.year+'年目 '+hon.join('・'));});
+ S.b11=b11Compute();
+ var B=S.b11[S.div];
+ if(B){
+  B.fw.concat(B.mf,B.df,B.gk).forEach(function(x){if(x.me){var q=playerById(x.pid);if(q)q.titles.push(S.year+'年目 '+divName(S.div)+'ベストイレブン');}});
+  if(B.mvp&&B.mvp.me){var mq=playerById(B.mvp.pid);if(mq){mq.titles.push(S.year+'年目 '+divName(S.div)+' MVP');S.awards.push({k:'mvp',pid:mq.id,v:0,d:S.div});}}
+ }
  var tg=S.target||'mid',ev=evalTarget(tg,rank,n,moved);
  var dl=ev>=1?25:ev===0?15:ev===-1?-30:-45;
  dl+=cupT.length*10+cupF*5;
@@ -2338,6 +2377,133 @@ function renderPO(d){
  h+='<p class="sub" style="margin:10px 0 0">'+esc(po.winner)+'がJ'+(d-1)+'へ昇格。</p>';
  $('r-po').innerHTML=h;
 }
+/* ---- レジェンド ---- */
+var LEGS=[
+ {n:'酒井 広樹',pos:'SB',club:'浦和ウッズ'},{n:'柴咲 岳',pos:'CM',club:'鹿島アンドラーズ'},
+ {n:'永友 佑都',pos:'SB',club:'東京FC'},{n:'香川 慎司',pos:'OM',club:'セレブ大阪'},
+ {n:'大迫 裕也',pos:'CF',club:'鹿島アンドラーズ'},{n:'犬井 貴士',pos:'WG',club:'清水エスパレス'},
+ {n:'円堂 保仁',pos:'CM',club:'ガンバレ大阪'},{n:'内田 篤斗',pos:'SB',club:'鹿島アンドラーズ'},
+ {n:'中田アルクス 闘莉王',pos:'CB',club:'浦和ウッズ'},{n:'中沢 裕二',pos:'CB',club:'横浜F･マレノス'},
+ {n:'尾野 真司',pos:'OM',club:'浦和ウッズ'},{n:'仲村 健吾',pos:'CM',club:'川崎フロンタレ'},
+ {n:'中村 隼輔',pos:'OM',club:'横浜F･マレノス'},{n:'水卜 和義',pos:'CF',club:'東京ベルディ'},
+ {n:'誉田 圭介',pos:'OM',club:'名古屋グランペス'}];
+var LEGSET={};LEGS.forEach(function(L){LEGSET[L.n]=1;});
+function legMark(n){return LEGSET[n]?'⭐'+n:n;}
+function legState(i){S.leg=S.leg||{};S.leg[i]=S.leg[i]||{st:'free',cool:0};return S.leg[i];}
+function legFree(i){var L=legState(i);return (L.st==='free')||(L.st==='cool'&&S.year>=L.cool);}
+function legSlot(pos){return pos==='CF'||pos==='WG'||pos==='OM'?'ace':pos==='CM'?'pm':pos==='CB'?'df1':'df2';}
+function legendTick(p){
+ var i,clubs=(S.pool||[]).concat(S.stock||[]);
+ S.vetLeg=null;
+ for(i=0;i<LEGS.length;i++){
+  var L=legState(i),G=LEGS[i];
+  if(L.st==='ai'&&S.year>=L.until){
+   var c=null;clubs.forEach(function(x){if(x.id===L.cid)c=x;});
+   if(c){c[L.slot]=L.prev;c.core-= (L.boost||0);c.legName=null;}
+   L.st='cool';L.cool=S.year+15;
+   if(!S.vetLeg&&Math.random()<.3)S.vetLeg=i;
+  }
+ }
+ for(i=0;i<LEGS.length;i++){
+  if(!legFree(i)||Math.random()>=(p||.07))continue;
+  var G2=LEGS[i],c2=null;
+  clubs.forEach(function(x){if(x.name===G2.club)c2=x;});
+  if(!c2||c2.legName)continue;
+  var L2=legState(i),slot=legSlot(G2.pos);
+  L2.st='ai';L2.cid=c2.id;L2.slot=slot;L2.prev=c2[slot];L2.until=S.year+3+rnd(3);L2.boost=1.5;
+  c2[slot]=G2.n;c2.core+=1.5;c2.legName=G2.n;
+  if(slot==='ace'){c2.aceShare=Math.max(c2.aceShare||.25,.32);}
+ }
+}
+function legendTag(c){return c&&c.legName?'　⭐ レジェンド '+c.legName+' が所属':'';}
+function makeLegendCand(i,kind){
+ var G=LEGS[i],p;
+ if(kind==='young'){
+  p=makePlayer(0,G.pos,18+rnd(3));
+  p.pot=Math.max(p.pot,92+rnd(7));
+ }else{
+  p=makePlayer(5,G.pos,31+rnd(3));
+ }
+ delete usedNames[p.name];p.foreign=false;p.nat='';p.name=G.n;usedNames[G.n]=1;
+ p.lgd=i;p.lgdKind=kind;
+ return p;
+}
+/* ---- 殿堂 ---- */
+function hofPoints(p){
+ var t=p.titles||[],ind=0,b11=0;
+ t.forEach(function(x){if(/ベストイレブン/.test(x))b11++;else if(/得点王|アシスト王|最多完封|MVP/.test(x))ind++;});
+ return tot(p,'app')+tot(p,'g')*3+tot(p,'a')*2+tot(p,'cs')*2+ind*80+b11*40+(p.hon||[]).length*30+Math.max(1,S.year-(p.joined||S.year))*10;
+}
+function hofCheck(p,how){
+ if(hofPoints(p)<600)return false;
+ S.hof=S.hof||[];S.hofNew=S.hofNew||[];
+ var t=(p.titles||[]).filter(function(x){return !/ベストイレブン/.test(x);});
+ S.hof.push({n:p.name,pos:p.pos,y0:p.joined||1,y1:S.year-1,app:tot(p,'app'),g:tot(p,'g'),a:tot(p,'a'),cs:tot(p,'cs'),
+  t:t.length,b11:(p.titles||[]).length-t.length,hon:(p.hon||[]).length,how:how,lg:LEGSET[p.name]?1:0});
+ S.hofNew.push(p.name+'（'+POSJ[p.pos]+'・在籍'+Math.max(1,S.year-(p.joined||S.year))+'年）');
+ return true;
+}
+function renderHOF(){
+ var H=S.hof||[];
+ if(!H.length){$('r-hof').innerHTML='<p class="sub" style="margin:0">まだ殿堂入りした選手はいません。長く活躍し、タイトルに絡んだ選手が引退・退団するときに選ばれます。</p>';return;}
+ var h='<div class="overflow"><table class="tbl"><tr><th>選手</th><th>在籍</th><th>出場</th><th>得点</th><th>A</th><th>個人賞</th><th></th></tr>';
+ H.slice().reverse().forEach(function(e){
+  h+='<tr><td>'+(e.lg?'⭐':'')+esc(e.n)+'<br><span style="opacity:.55;font-size:10.5px">'+POSJ[e.pos]+'・'+esc(e.how)+'</span></td><td class="num">'+e.y0+'〜'+e.y1+'</td><td class="num">'+e.app+'</td><td class="num">'+e.g+'</td><td class="num">'+e.a+'</td><td class="num">'+(e.t+e.b11)+'</td><td style="color:var(--amber)">🏛</td></tr>';
+ });
+ $('r-hof').innerHTML=h+'</table></div>';
+}
+/* ---- シーズンのベストイレブン ---- */
+function b11Compute(){
+ var out={},d;
+ for(d=1;d<=3;d++){
+  var tb=divTable(d),n=tb.length,rk={},cands=[];
+  tb.forEach(function(r,i){rk[r.me?'__ME__':r.name]=i+1;});
+  var rb=function(r){return (n+1-r)*1.2;};
+  divClubs(d).forEach(function(c){
+   var r=rk[c.name]||n,cs=(c.ts&&c.ts.cs)||0,ga=c.ga||40;
+   cands.push({n:c.ace,club:c.name,g:'FW',sc:(c.aceG||0)*3+Math.round((c.aceG||0)*.25)*1.5+rb(r)});
+   cands.push({n:c.ace2,club:c.name,g:'FW',sc:(c.ace2G||0)*3+Math.round((c.ace2G||0)*.3)*1.5+rb(r)});
+   cands.push({n:c.pm,club:c.name,g:'MF',sc:(c.pmA||0)*3+Math.round((c.gf||0)*.06)*2+rb(r)});
+   cands.push({n:c.df1,club:c.name,g:'CB',sc:cs*2+Math.max(0,50-ga)*.5+rnd(3)*2+rb(r)});
+   cands.push({n:c.df2,club:c.name,g:'SB',sc:cs*2+Math.max(0,50-ga)*.5+rnd(2)*2+rb(r)});
+   cands.push({n:c.gk,club:c.name,g:'GK',sc:cs*3+Math.max(0,50-ga)*.6+rb(r)});
+  });
+  if(d===S.div){
+   var r0=S.rank||rk.__ME__||n;
+   S.squad.forEach(function(p){
+    if((p.s.start||0)<12)return;
+    var ps=p.pos,g=ps==='GK'?'GK':ps==='CB'?'CB':ps==='SB'?'SB':(ps==='DM'||ps==='CM'||ps==='OM')?'MF':'FW',sc;
+    if(g==='FW')sc=p.s.g*3+p.s.a*1.5;
+    else if(g==='MF')sc=p.s.a*3+p.s.g*2;
+    else if(g==='GK')sc=p.s.cs*3+Math.max(0,50-S.ga)*.6;
+    else sc=p.s.cs*2+Math.max(0,50-S.ga)*.5+p.s.g*2;
+    cands.push({n:p.name,club:S.teamName,g:g,sc:sc+rb(r0),me:1,pid:p.id});
+   });
+  }
+  var top=function(grp,k){return cands.filter(function(x){return x.g===grp&&x.n;}).sort(function(a,b){return b.sc-a.sc;}).slice(0,k);};
+  var fw=top('FW',3),mf=top('MF',3),cb=top('CB',2),sb=top('SB',2),gk=top('GK',1);
+  var xi=fw.concat(mf,sb.slice(0,1),cb,sb.slice(1),gk);
+  var mvp=xi.slice().sort(function(a,b){return b.sc-a.sc;})[0]||null;
+  out[d]={fw:fw,mf:mf,df:[sb[0],cb[0],cb[1],sb[1]].filter(Boolean),gk:gk,mvp:mvp};
+ }
+ return out;
+}
+function b11Row(list){
+ return '<div class="b11row">'+list.map(function(x){
+  return '<div class="b11p'+(x.me?' me':'')+'"><b>'+esc(legMark(x.n))+'</b><span>'+esc(x.club)+'</span></div>';}).join('')+'</div>';
+}
+function renderB11(d){
+ if(d!=null)S.b11View=d;
+ d=S.b11View||S.div;
+ var B=S.b11&&S.b11[d];
+ var th='';for(var k=1;k<=3;k++)th+='<button class="chip'+(k===d?' on':'')+'" data-b11="'+k+'">J'+k+'</button>';
+ $('r-b11tabs').innerHTML=th;
+ if(!B){$('r-b11').innerHTML='';return;}
+ var mine=B.fw.concat(B.mf,B.df,B.gk).filter(function(x){return x.me;}).length;
+ $('r-b11').innerHTML='<div class="b11pitch">'+b11Row(B.fw)+b11Row(B.mf)+b11Row(B.df)+b11Row(B.gk)+'</div>'
+  +'<p class="sub" style="margin:10px 0 0">MVP：<b style="color:var(--amber)">'+esc(legMark(B.mvp?B.mvp.n:'—'))+'</b>（'+esc(B.mvp?B.mvp.club:'')+'）'
+  +(d===S.div?'　／　あなたのクラブから'+mine+'人選出':'')+'</p>';
+}
 function scorerList(d){
  var sc=[],cs=divClubs(d),i;
  if(d===S.div)for(i=0;i<S.squad.length;i++)if(S.squad[i].s.g>0)sc.push({n:S.squad[i].name,g:S.squad[i].s.g,me:1,club:S.teamName});
@@ -2375,7 +2541,7 @@ function renderScorers(d){
  $('r-rktabs').innerHTML=th;
  var sc=R.f(d),h='<tr><th>#</th><th>選手</th><th>'+R.u+'</th></tr>';
  for(var m=0;m<Math.min(sc.length,10);m++){
-  h+='<tr class="'+(sc[m].me?'me':'')+'"><td class="num">'+(m+1)+'</td><td>'+esc(sc[m].n)
+  h+='<tr class="'+(sc[m].me?'me':'')+'"><td class="num">'+(m+1)+'</td><td>'+esc(legMark(sc[m].n))
    +'<br><span style="opacity:.55;font-size:10.5px">'+esc(sc[m].club)+'</span></td><td class="num">'+sc[m].g+'</td></tr>';
  }
  $('r-scorers').innerHTML=h;
@@ -2425,7 +2591,7 @@ function renderSquadStats(){
  for(i=0;i<sq.length;i++){
   var p=sq[i],xi=S.slots.indexOf(p.id)>-1;
   h+='<tr data-pid="'+p.id+'"><td class="num" style="text-align:left">'+POSJ[p.pos]+'</td>'
-   +'<td>'+esc(p.name)+'<br><span style="opacity:.5;font-size:10.5px">'+p.age+'歳'+(xi?'・スタメン':'')+'</span></td>';
+   +'<td>'+esc(p.name)+'<br><span style="opacity:.5;font-size:10.5px">'+p.age+'歳'+(xi?'・スタメン':'・控え')+'・'+tenure(p)+'</span></td>';
   for(j=0;j<g.cols.length;j++){
    var k=g.cols[j][1],v=p.s[k];
    if(k==='dist')v=p.s.app?(p.s.dist/p.s.app).toFixed(1):'0.0';
@@ -2468,6 +2634,7 @@ function renderLog(i){
  $('r-log').innerHTML=h;
 }
 function renderResult(){
+ applyFold();
  var R=S.res,rank=R.rank,n=R.n,moved=R.moved,champ=R.champ,head=R.head,body=R.body;
  var le=S.lastEval||{tg:'mid',ev:0,dl:0};
  $('r-verdict').className='verdict'+(champ||moved===-1?' gold':'');
@@ -2502,6 +2669,8 @@ function renderResult(){
 
  prepareShare(moved,rank,n);
  renderAwards();
+ renderB11(S.div);
+ renderHOF();
  $('btn-off').textContent=S.fired?'解任会見へ':(moved===-1?divName(S.div-1)+'のオフシーズンへ':moved===1?divName(S.div+1)+'のオフシーズンへ':'オフシーズンへ');
  setTop(divName(S.div)+' '+rank+'位');
  show('s-result');
@@ -2878,7 +3047,7 @@ function renderOffers(){
  for(var i=0;i<S.offers.length;i++){
   var o=S.offers[i],p=o.p,ov=o.area!=='jp';
   h+='<div class="offer'+(ov?' ov':'')+'" data-i="'+i+'">'
-   +'<div class="who">'+esc(p.name)+'<small>'+POSJ[p.pos]+'・'+p.age+'歳・総合'+p.ovr+'・昨季'+(p.ls?p.ls.g:0)+'得点'+(S.slots.indexOf(p.id)>-1?'・スタメン':'・控え')+'</small></div>'
+   +'<div class="who">'+esc(p.name)+'<small>'+POSJ[p.pos]+'・'+p.age+'歳・総合'+p.ovr+'・昨季'+(p.ls?p.ls.g:0)+'得点'+(S.slots.indexOf(p.id)>-1?'・スタメン':'・控え')+'・'+tenure(p)+'</small></div>'
    +'<div class="from">'+(o.area==='eu'?'🌍 ':o.area==='asia'?'✈️ ':o.area==='loan'?'🌱 ':o.area==='out'?'🚪 ':'')+esc(o.club)+(o.area==='loan'||o.area==='out'?'が獲得を打診（本人も出場機会を希望）':'から正式オファー')
    +'<span class="tierb">'+tierName(o)+'</span></div>'
    +'<div style="font-size:13px">移籍金 <b style="color:var(--amber)">'+feeTxt(o.fee||0)+'</b>　残留の見込み：<span class="lv '+o.lv+'">'+LVJ[o.lv]+'</span></div>';
@@ -2909,6 +3078,7 @@ function resolveOffer(i,act){
     area:o.area,app:tot(o.p,'app'),g:tot(o.p,'g')});
   }
   if(o.area==='loan'){S.loans=S.loans||[];S.loans.push({p:o.p,back:S.year+2,club:o.club});}
+  else{o.hof=hofCheck(o.p,'移籍（'+o.club+'）');if(o.p.lgd!=null){var LL2=legState(o.p.lgd);LL2.st='cool';LL2.cool=S.year+15;}}
   gc('transfer-'+(o.area||'jp'));
  }
  renderOffers();renderOffSquad();
@@ -2921,7 +3091,7 @@ function renderOffSquad(){
  for(var r=0;r<sq.length;r++){
   var rp=sq[r],inXI=S.slots.indexOf(rp.id)>-1;
   if(rp.pos!==rcur){rh+='<li class="rhead"><span class="rp">'+POSJ[rp.pos]+'</span><span>'+POSNAME[rp.pos]+'</span><span></span></li>';rcur=rp.pos;}
-  rh+='<li data-pid="'+rp.id+'"><span class="rp"></span><span>'+(rp.foreign?natOf(rp).f+' ':'')+esc(rp.name)+'<small>'+rp.age+'歳'+(rp.pos2?' ・'+POSJ[rp.pos2]+(rp.pos3?'/'+POSJ[rp.pos3]:'')+'も◎':'')+(inXI?' ・スタメン':' ・控え')+'　通算'+rp.c.g+'得点</small></span><span class="rv">'+rp.ovr+'</span></li>';
+  rh+='<li data-pid="'+rp.id+'"><span class="rp"></span><span>'+(rp.foreign?natOf(rp).f+' ':'')+esc(rp.name)+'<small>'+rp.age+'歳'+(rp.pos2?' ・'+POSJ[rp.pos2]+(rp.pos3?'/'+POSJ[rp.pos3]:'')+'も◎':'')+(inXI?' ・スタメン':' ・控え')+'・'+tenure(rp)+'　通算'+rp.c.g+'得点</small></span><span class="rv">'+rp.ovr+'</span></li>';
  }
  $('o-squad').innerHTML=rh;
  $('o-squad-sub').textContent=S.squad.length+'人'+(S.holes.length?'（引退・移籍で'+S.holes.length+'人減）':'')+'。この顔ぶれを見ながら候補を選びます。';
@@ -2953,7 +3123,8 @@ function openOffseason(){
   var p=S.squad[i],why='';
   if(p.retiring)why='age';
   else if(p.major>=2&&Math.random()<(p.major>=3?.8:.45))why='inj';
-  if(why){ret.push({p:p,why:why});S.retired.push({p:p,why:why});S.holes.push(p.pos);S.squad.splice(i,1);}
+  if(why){var hf=hofCheck(p,why==='inj'?'大怪我で引退':'引退');if(p.lgd!=null){var LL=legState(p.lgd);LL.st='cool';LL.cool=S.year+15;}
+   ret.push({p:p,why:why,hof:hf});S.retired.push({p:p,why:why,hof:hf});S.holes.push(p.pos);S.squad.splice(i,1);}
  }
  var rh='';
  for(i=0;i<ret.length;i++){
@@ -2970,6 +3141,7 @@ function openOffseason(){
   +(S.champStreak?'　／　'+(S.champStreak>=2?S.champStreak+'連覇':'王者')+'のクラブとして、主力が狙われています。':'')
   +((S.returns&&S.returns.length)?'　／　武者修行から'+S.returns.map(function(q){return q.name+'（'+q.ovr+'）';}).join('、')+'が帰還。':'');
  S.target=S.nextTarget||'stay';
+ S.hofNew=[];legendTick(.07);
  pruneNames();
  S.offTitle=$('o-title').textContent;S.offSub=$('o-sub').textContent;
  S.offGrowth=$('o-growth').innerHTML;S.offRetire=$('o-retire').innerHTML;S.offRetireN=ret.length;
@@ -2988,7 +3160,7 @@ function missingWarn(){
  return w;
 }
 function showLeaveDialog(ret,gone){
- if(!(ret&&ret.length)&&!(gone&&gone.length)&&!(S.returns&&S.returns.length))return;
+ if(!(ret&&ret.length)&&!(gone&&gone.length)&&!(S.returns&&S.returns.length)&&!(S.hofNew&&S.hofNew.length))return;
  var h='<b style="font-size:17px">今オフ、'+((ret?ret.length:0)+(gone?gone.length:0))+'人が去りました</b>';
  if(ret&&ret.length){
   h+='<div style="margin-top:10px;font-weight:400;font-size:14px;line-height:1.8"><b>引退</b><br>';
@@ -3005,15 +3177,18 @@ function showLeaveDialog(ret,gone){
   h+=S.returns.map(function(q){return '・'+esc(q.name)+'（'+POSJ[q.pos]+'・'+q.age+'歳／総合'+q.ovr+'）武者修行から';}).join('<br>');
   h+='</div>';
  }
+ if(S.hofNew&&S.hofNew.length){
+  h+='<div style="margin-top:10px;font-weight:400;font-size:14px;line-height:1.8"><b>🏛 クラブ殿堂入り</b><br>'+S.hofNew.map(function(x){return '・'+esc(x);}).join('<br>')+'</div>';
+ }
  var w=missingWarn();
  if(w.length)h+='<div style="margin-top:12px;color:#b3321f;font-size:13.5px">⚠ '+esc(w.join('　'))+'。今オフで補強してください。</div>';
  note(h);
 }
 function showRetireCard(i){
  var r=(S.retired||[])[i];if(!r)return;
- var p=r.p,big=(tot(p,'app')>=200||(p.titles&&p.titles.length))?'クラブの歴史に名を刻む':'ありがとう';
+ var p=r.p,big=r.hof?'クラブ殿堂入り':((tot(p,'app')>=200||(p.titles&&p.titles.length))?'クラブの歴史に名を刻む':'ありがとう');
  S.pdId=p.id;S.pKind='retire';S.retP=p;
- S.pShare='【号外】'+p.name+'、現役引退。\n'+S.teamName+'で'+Math.max(1,S.year-p.joined)+'年・'+tot(p,'app')+'試合'+tot(p,'g')+'得点\n'+(r.why==='inj'?'大怪我を乗り越えて。':'おつかれさま。')+'\n#FCRJ';
+ S.pShare='【号外】'+p.name+'、現役引退。'+(r.hof?'クラブ殿堂入り🏛':'')+'\n'+S.teamName+'で'+Math.max(1,S.year-p.joined)+'年・'+tot(p,'app')+'試合'+tot(p,'g')+'得点\n'+(r.why==='inj'?'大怪我を乗り越えて。':'おつかれさま。')+'\n#FCRJ';
  $('pd-body').innerHTML='<div class="pdsec"><h3>現役引退</h3><p style="margin:0;font-size:15px">'
   +esc(p.name)+'（'+p.age+'歳・'+posLabel(p)+'）<br>通算 '+tot(p,'app')+'試合 '+tot(p,'g')+'得点 '+tot(p,'a')+'アシスト</p></div>';
  $('pd-brag').style.display='none';
@@ -3070,6 +3245,13 @@ function genCands(){
  for(i=0;i<miss.length;i++){S.cands.push(makePlayer(bonus+2,miss[i]));S.candTag.push('補強ポイント（'+miss[i]+'が不在）');}
  for(i=miss.length;i<base;i++){S.cands.push(makePlayer(bonus));S.candTag.push('');}
  for(i=0;i<S.holes.length;i++){S.cands.push(makePlayer(bonus,S.holes[i]));S.candTag.push('穴埋め候補（'+S.holes[i]+'）');}
+ if(S.vetLeg!=null&&legState(S.vetLeg).st!=='mine'){
+  var vp=makeLegendCand(S.vetLeg,'vet');S.cands.push(vp);S.candTag.push('⭐ レジェンド（'+LEGS[S.vetLeg].club+'を退団）');
+ }
+ if(Math.random()<(S.lastACL?.10:.05)){
+  var fr=[];for(var li=0;li<LEGS.length;li++)if(legFree(li))fr.push(li);
+  if(fr.length){var yi=pick(fr);var yp=makeLegendCand(yi,'young');S.cands.push(yp);S.candTag.push('⭐ 原石');}
+ }
  var rw=aclReward();
  if(rw){
   var stp=makeStar(rw);
@@ -3126,7 +3308,7 @@ function openRelease(){
   for(i=0;i<mine.length;i++){
    var p=mine[i],inXI=S.slots.indexOf(p.id)>-1;
    h+='<li><button class="pick" data-id="'+p.id+'"><span class="box"></span><span class="rp">'+posLabel(p)+'</span>'
-    +'<span>'+esc(p.name)+'<small>'+p.age+'歳'+(inXI?' ・スタメン':' ・控え')+'　通算'+p.c.g+'得点</small></span>'
+    +'<span>'+esc(p.name)+'<small>'+p.age+'歳'+(inXI?' ・スタメン':' ・控え')+'・'+tenure(p)+'　通算'+p.c.g+'得点</small></span>'
     +'<span class="rv">'+p.ovr+'</span></button></li>';
   }
  }
@@ -3143,7 +3325,7 @@ function startNextSeason(){
  var i,j;
  for(i=0;i<S.releasing.length;i++)
   for(j=0;j<S.squad.length;j++)if(S.squad[j].id===S.releasing[i]){S.squad.splice(j,1);break;}
- for(i=0;i<S.picked.length;i++){var np=S.cands[S.picked[i]];np.joined=S.year;np.route=np.prospect?np.univ+'から特別指定':S.year+'年目のオフに獲得';S.squad.push(np);}
+ for(i=0;i<S.picked.length;i++){var np=S.cands[S.picked[i]];np.joined=S.year;np.route=np.prospect?np.univ+'から特別指定':S.year+'年目のオフに獲得';if(np.lgd!=null){legState(np.lgd).st='mine';}S.squad.push(np);}
  S.releasing=[];S.picked=[];S.holes=[];
  openFormation();
 }
@@ -3290,11 +3472,11 @@ function showTransferCard(i){
  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(go);else go();
  $('pd').hidden=false;$('pd').scrollTop=0;document.body.style.overflow='hidden';
 }
-var AWJ={goal:['得点王','GOALS','得点'],assist:['アシスト王','ASSISTS','アシスト'],cs:['最多完封GK','CLEAN SHEETS','試合完封']};
+var AWJ={goal:['得点王','GOALS','得点'],assist:['アシスト王','ASSISTS','アシスト'],cs:['最多完封GK','CLEAN SHEETS','試合完封'],mvp:['MVP','MVP','']};
 function drawAwardCard(a,p){
  var cv=document.createElement('canvas');cv.width=1200;cv.height=675;
  var x=cv.getContext('2d'),L=48,nat=natOf(p),J=AWJ[a.k],dv=divName(a.d);
- var bg=a.k==='goal'?pickBG(['bicycle','point','play','goal'],p.id):a.k==='assist'?'pass':'award-cs';
+ var bg=a.k==='goal'?pickBG(['bicycle','point','play','goal'],p.id):a.k==='assist'?'pass':a.k==='mvp'?'point':'award-cs';
  drawBG(x,bg);
  x.textAlign='left';x.textBaseline='alphabetic';
  x.fillStyle='#FFC21A';x.font='500 20px '+FO;x.fillText('FOOTBALL CHAMPION ROAD J　/　AWARD',L,60);
@@ -3307,8 +3489,9 @@ function drawAwardCard(a,p){
  x.fillText((nat?nat.f+' ':'')+p.age+'歳　'+posLabel(p)+'　総合'+p.ovr,L,y+42);
  fitFont(x,S.teamName,560,30,'900',FJ);x.fillStyle='#F2F5EE';x.fillText(S.teamName,L,y+92);
  x.textAlign='right';
- x.fillStyle='#FFC21A';x.font='700 190px '+FO;x.fillText(String(a.v),1150,470);
- x.fillStyle='#F2F5EE';x.font='500 30px '+FO;x.fillText(J[1],1150,515);
+ if(a.k==='mvp'){x.fillStyle='#FFC21A';x.font='700 170px '+FO;x.fillText('MVP',1150,470);x.fillStyle='#F2F5EE';x.font='500 30px '+FO;x.fillText('SEASON '+S.year,1150,515);}
+ else{x.fillStyle='#FFC21A';x.font='700 190px '+FO;x.fillText(String(a.v),1150,470);
+ x.fillStyle='#F2F5EE';x.font='500 30px '+FO;x.fillText(J[1],1150,515);}
  x.fillStyle='rgba(242,245,238,.75)';x.font='700 22px '+FO;x.fillText('#FCRJ',1166,650);
  return cv;
 }
@@ -3317,7 +3500,7 @@ function showAwardCard(i){
  var p=playerById(a.pid);if(!p)return;
  var J=AWJ[a.k],dv=divName(a.d);
  S.pdId=p.id;S.pKind='award-'+a.k;
- S.pShare='【号外】'+p.name+'、'+dv+J[0]+'！！\n'+S.teamName+'で'+a.v+J[2]+'\n#FCRJ';
+ S.pShare='【号外】'+p.name+'、'+dv+J[0]+'！！\n'+S.teamName+(a.k==='mvp'?'からシーズン最優秀選手に':'で'+a.v+J[2])+'\n#FCRJ';
  $('pd-body').innerHTML='<div class="pdsec"><h3>'+dv+J[0]+'</h3><p style="margin:0;font-size:15px">'+esc(p.name)+'（'+p.age+'歳・'+posLabel(p)+'）　'+a.v+J[2]+'</p></div>';
  $('pd-brag').style.display='none';
  $('pd-text').textContent=S.pShare;
@@ -3331,7 +3514,54 @@ function renderAwards(){
   var p=playerById(A[i].pid);if(!p)continue;
   h+='<button class="btn ghost small" data-award="'+i+'" style="margin-top:8px">🏅 '+divName(A[i].d)+AWJ[A[i].k][0]+'　'+esc(p.name)+' の号外</button>';
  }
+ if(S.b11&&S.b11[S.div])h+='<button class="btn ghost small" data-b11share="1" style="margin-top:8px">📋 '+divName(S.div)+'ベストイレブンの号外</button>';
  $('r-awards').innerHTML=h;
+}
+function drawB11Card(d){
+ var B=S.b11[d],cv=document.createElement('canvas');cv.width=1200;cv.height=675;
+ var x=cv.getContext('2d'),i;
+ drawBG(x,'acle','even');
+ var X0=34,Y0=28,PW=560,PH=619;
+ x.save();x.beginPath();x.rect(X0,Y0,PW,PH);x.clip();
+ for(i=X0;i<X0+PW;i+=60){x.fillStyle=((i-X0)/60)%2?'#0C5C39':'#0A5233';x.fillRect(i,Y0,60,PH);}
+ x.restore();
+ x.strokeStyle='rgba(242,245,238,.5)';x.lineWidth=2;x.strokeRect(X0,Y0,PW,PH);
+ x.beginPath();x.moveTo(X0,Y0+PH/2);x.lineTo(X0+PW,Y0+PH/2);x.stroke();
+ var rows=[[B.fw,.14],[B.mf,.40],[B.df,.66],[B.gk,.89]];
+ x.textAlign='center';x.textBaseline='middle';
+ rows.forEach(function(rw){
+  var L=rw[0],y=Y0+PH*rw[1];
+  L.forEach(function(pl,k){
+   var cx=X0+PW*(k+1)/(L.length+1);
+   x.beginPath();x.arc(cx,y-14,13,0,Math.PI*2);x.fillStyle=pl.me?'#FFC21A':'#F2F5EE';x.fill();
+   x.fillStyle='#fff';x.shadowColor='rgba(0,0,0,.85)';x.shadowBlur=5;
+   fitFont(x,legMark(pl.n),PW/(L.length+.4),17,'700',FJ);x.fillText(legMark(pl.n),cx,y+14);
+   x.fillStyle='rgba(242,245,238,.75)';fitFont(x,pl.club,PW/(L.length+.4),12,'700',FJ);x.fillText(pl.club,cx,y+34);
+   x.shadowBlur=0;
+  });
+ });
+ var R=630;x.textAlign='left';x.textBaseline='alphabetic';
+ x.fillStyle='#FFC21A';x.font='500 20px '+FO;x.fillText('FOOTBALL CHAMPION ROAD J　/　SEASON '+S.year,R,64);
+ x.fillStyle='rgba(242,245,238,.9)';x.font='900 30px '+FJ;x.fillText('号外　シーズンの顔ぶれ',R,118);
+ var t=divName(d)+'ベストイレブン';fitFont(x,t,540,64,'900',FJ);x.fillStyle='#FFC21A';x.fillText(t,R,196);
+ x.fillStyle='#F2F5EE';x.font='900 28px '+FJ;x.fillText('MVP',R,266);
+ if(B.mvp){fitFont(x,legMark(B.mvp.n),540,46,'900',FJ);x.fillText(legMark(B.mvp.n),R,322);
+  x.font='700 24px '+FJ;x.fillStyle='rgba(242,245,238,.85)';x.fillText(B.mvp.club,R,360);}
+ var mine=B.fw.concat(B.mf,B.df,B.gk).filter(function(z){return z.me;}).length;
+ if(d===S.div){x.fillStyle='#FFC21A';x.font='900 30px '+FJ;x.fillText(S.teamName+'から'+mine+'人選出',R,440);}
+ x.fillStyle='rgba(242,245,238,.75)';x.font='700 22px '+FO;x.textAlign='right';x.fillText('#FCRJ',1166,650);
+ return cv;
+}
+function showB11Card(){
+ var d=S.div,B=S.b11&&S.b11[d];if(!B)return;
+ var mine=B.fw.concat(B.mf,B.df,B.gk).filter(function(z){return z.me;});
+ S.pKind='b11';S.pdId=null;S.retP={id:'b11'};
+ S.pShare='【号外】'+divName(d)+'ベストイレブン発表！\nMVPは'+(B.mvp?B.mvp.n+'（'+B.mvp.club+'）':'—')+'\n'+S.teamName+'から'+mine.length+'人選出'+(mine.length?'：'+mine.map(function(z){return z.n;}).join('、'):'')+'\n#FCRJ';
+ $('pd-body').innerHTML='<div class="pdsec"><h3>'+divName(d)+'ベストイレブン</h3><p style="margin:0;font-size:14px">'+esc(S.pShare.split('\n').slice(1,3).join('　'))+'</p></div>';
+ $('pd-brag').style.display='none';$('pd-text').textContent=S.pShare;
+ var go=function(){var cu=cardURL(function(){return drawB11Card(d);});S.pcard=cu.cv;$('pd-card').src=cu.url;$('pd-share').style.display='block';};
+ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(go);else go();
+ $('pd').hidden=false;$('pd').scrollTop=0;document.body.style.overflow='hidden';
 }
 function bragPlayer(){
  var p=findPlayer(S.pdId);if(!p)return;
@@ -3355,7 +3585,7 @@ function sharePlayer(save){
 }
 
 /* ============ セーブ ============ */
-var SAVE_KEY='fcrj-save-v1',SAVE_VER=1,VERSION='v2.1.3';
+var SAVE_KEY='fcrj-save-v1',SAVE_VER=1,VERSION='v2.3.0';
 var SKIP={timer:1,rows:1,rivals:1,card:1,pcard:1,cups:1,poAll:1,_poss:1,_pass:1,_bulk:1,shareText:1,pShare:1};
 var CM=null,CMNO=null;
 function ask(msg,yes,cb,danger){
@@ -3425,7 +3655,8 @@ function pruneNames(){
  var keep={},add=function(n){if(n)keep[n]=1;};
  (S.squad||[]).forEach(function(p){add(p.name);});
  (S.cands||[]).forEach(function(p){add(p.name);});
- (S.pool||[]).concat(S.stock||[],S.univs||[],S.haneda?[S.haneda]:[]).forEach(function(c){add(c.ace);add(c.ace2);add(c.pm);add(c.gk);});
+ (S.pool||[]).concat(S.stock||[],S.univs||[],S.haneda?[S.haneda]:[]).forEach(function(c){add(c.ace);add(c.ace2);add(c.pm);add(c.gk);add(c.df1);add(c.df2);});
+ LEGS.forEach(function(L){add(L.n);});
  (S.alumni||[]).forEach(function(a){add(a.n);});
  (S.loans||[]).forEach(function(l){add(l.p&&l.p.name);});
  usedNames=keep;
@@ -3464,7 +3695,7 @@ function applySave(d){
  for(k in o)if(k!=='cups'&&k!=='poAll')S[k]=o[k];
  S.timer=null;
  S.cups=unpackCups(o.cups);S.poAll=unpackPO(o.poAll);
- (S.pool||[]).concat(S.stock||[],S.univs||[],S.haneda?[S.haneda]:[]).forEach(function(c){if(!c.pm)c.pm=uniqueName();if(!c.gk)c.gk=uniqueName();});
+ (S.pool||[]).concat(S.stock||[],S.univs||[],S.haneda?[S.haneda]:[]).forEach(function(c){if(!c.pm)c.pm=uniqueName();if(!c.gk)c.gk=uniqueName();if(!c.df1)c.df1=uniqueName();if(!c.df2)c.df2=uniqueName();});
  if(S.pool&&S.pool.length&&(!S.acl||!S.acl.length))buildACLClubs();
  (S.squad||[]).forEach(function(q){
   if(q.cond==null)q.cond=100;
@@ -3560,6 +3791,7 @@ function showBye(kind){
  $('b-verdict').innerHTML='<div class="kicker">'+(fired?'DISMISSED':'FAREWELL')+'</div><h2>'+(fired?'監督解任':'監督退任')+'</h2>'
   +'<p>'+esc(name)+'を率いた'+yrs+'年間'+(best?'。最高到達はJ'+best.div+'（'+best.year+'年目 '+best.rank+'位）':'')+'。</p>'
   +'<p style="margin-top:8px">'+(t.length?'獲得タイトル：'+esc(t.join('、')):'タイトルには届きませんでした。')+'</p>'
+  +((S.hof&&S.hof.length)?'<p style="margin-top:8px">🏛 クラブ殿堂入りさせた選手：'+S.hof.map(function(e){return esc(e.n);}).join('、')+'</p>':'')
   +'<p style="margin-top:8px">'+(fired?'フロントの信頼を取り戻せませんでした。次のクラブで雪辱を。':'お疲れさまでした。')+'</p>';
  var hh='<tr><th>年</th><th>ディビジョン</th><th>順位</th><th>勝点</th><th></th></tr>';
  for(i=0;i<H.length;i++)hh+='<tr><td class="num">'+H[i].year+'</td><td>J'+H[i].div+'</td><td class="num">'+H[i].rank+'</td><td class="num">'+H[i].pts+'</td><td style="color:var(--amber);white-space:normal">'+(H[i].note||'')+'</td></tr>';
@@ -3573,6 +3805,26 @@ function showBye(kind){
  S.started=false;
  setTop(fired?'監督解任':'監督退任');
  show('s-bye');
+}
+
+function makeFoldable(){
+ var secs=document.querySelectorAll('#s-result .sec');
+ for(var ix=0;ix<secs.length;ix++)(function(sec,ix){
+  if(sec.classList.contains('foldable'))return;
+  var h=sec.querySelector('h2');if(!h)return;
+  var body=document.createElement('div');body.className='secbody';
+  while(h.nextSibling)body.appendChild(h.nextSibling);
+  sec.appendChild(body);
+  sec.classList.add('foldable');sec.setAttribute('data-fold',ix);
+  h.addEventListener('click',function(){
+   sec.classList.toggle('open');
+   S.ui=S.ui||{};S.ui['f'+ix]=sec.classList.contains('open');
+  });
+ })(secs[ix],ix);
+}
+function applyFold(){
+ var secs=document.querySelectorAll('#s-result .sec.foldable');
+ for(var i=0;i<secs.length;i++){var ix=secs[i].getAttribute('data-fold');secs[i].classList.toggle('open',!!(S.ui&&S.ui['f'+ix]));}
 }
 
 /* ============ 配線 ============ */
@@ -3596,7 +3848,13 @@ document.addEventListener('click',function(e){
  openPD(parseInt(el.getAttribute('data-pid'),10));
 });
 $('btn-resign').addEventListener('click',resign);
+$('r-b11tabs').addEventListener('click',function(e){
+ var b=e.target.closest?e.target.closest('[data-b11]'):null;if(!b)return;
+ renderB11(parseInt(b.getAttribute('data-b11'),10));
+});
 $('r-awards').addEventListener('click',function(e){
+ var bb=e.target.closest?e.target.closest('[data-b11share]'):null;
+ if(bb){showB11Card();return;}
  var b=e.target.closest?e.target.closest('[data-award]'):null;if(!b)return;
  showAwardCard(parseInt(b.getAttribute('data-award'),10));
 });
@@ -3696,6 +3954,7 @@ function fb(t,done){
  document.body.removeChild(ta);
 }
 preloadBG();
+makeFoldable();
 initTitle();
 })();
 </script>
