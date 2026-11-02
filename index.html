@@ -304,6 +304,8 @@ footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-si
 .warn{background:rgba(208,65,44,.18);border-left:3px solid var(--clay);padding:10px 12px;border-radius:0 3px 3px 0;font-size:13px;margin-top:12px;}
 .gfoot{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);}
 .gfoot #btn-contact{display:block;text-align:center;text-decoration:none;margin-top:10px;line-height:1.3;}
+.gfoot #btn-sister{display:block;text-align:center;text-decoration:none;margin-top:10px;line-height:1.3;}
+.gfoot #btn-sister small{display:block;font-family:"Oswald",sans-serif;font-weight:500;font-size:11.5px;opacity:.75;margin-top:4px;}
 .gfoot #btn-contact small{display:block;font-family:"Oswald",sans-serif;font-weight:500;font-size:11.5px;opacity:.7;margin-top:4px;}
 .gfoot .disc{font-size:11px;color:rgba(242,245,238,.5);margin:14px 0 4px;line-height:1.6;}
 .gfoot .ver{font-family:"Oswald",sans-serif;font-size:11px;letter-spacing:.08em;color:rgba(242,245,238,.4);margin:0;}
@@ -510,7 +512,7 @@ footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-si
     <label class="fld" id="r-logsel" style="display:none">シーズン<select id="r-logyear"></select></label>
     <div class="log" id="r-log" style="max-height:52vh"></div>
   </div>
-  <div class="sec"><h2>クラブの歩み</h2><div class="overflow"><table class="tbl" id="r-history"></table></div></div>
+  <div class="sec"><h2>クラブの歩み</h2><div class="overflow"><table class="tbl" id="r-history"></table></div><button class="btn ghost small" id="btn-histshare" style="margin-top:12px">📜 クラブの歩みをシェア</button></div>
   <div class="sec"><h2>クラブの殿堂</h2><div id="r-hof"></div></div>
   <button class="btn cta" id="btn-off">オフシーズンへ</button>
   <div class="sec">
@@ -573,7 +575,7 @@ footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-si
 
 <section class="screen" id="s-bye">
   <div class="verdict" id="b-verdict"></div>
-  <div class="sec"><h2>監督としての歩み</h2><div class="overflow"><table class="tbl" id="b-history"></table></div></div>
+  <div class="sec"><h2>監督としての歩み</h2><div class="overflow"><table class="tbl" id="b-history"></table></div><button class="btn ghost small" id="btn-histshare2" style="margin-top:12px">📜 クラブの歩みをシェア</button></div>
   <div class="sec">
     <h2>結果を残す</h2>
     <div class="shareout" id="b-share"></div>
@@ -617,9 +619,10 @@ footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-si
     <button class="btn ghost small" id="btn-export">セーブを書き出す</button>
     <button class="btn ghost small danger" id="btn-resign">監督辞任</button>
   </div>
+  <a class="btn small" id="btn-sister" href="https://kanasama0809.github.io/FCRE/" target="_blank" rel="noopener" data-goatcounter-click="to-fcre">⚽ 新作：欧州版 Football Champion Road E<small>4部からプレミアの頂点へ</small></a>
   <a class="btn ghost small" id="btn-contact" href="https://x.com/kanasama_united" target="_blank" rel="noopener">感想・不具合報告はこちら<small>X @kanasama_united</small></a>
   <p class="disc">このゲームはフィクションです。登場するクラブ・団体・人物の名称は架空のものであり、実在のものとは関係ありません。</p>
-  <p class="ver">Football Champion Road J　v2.3.0</p>
+  <p class="ver">Football Champion Road J　v2.5.1</p>
 </div>
 </div>
 <script>
@@ -1032,7 +1035,7 @@ function buildSeason(){
  S.rivals=divClubs(S.div);
  S.rounds=S.rivals.length*2;
  simDivision(1);simDivision(2);simDivision(3);
- buildACL();
+ buildACL();buildIC();buildCWC();
  S.aclSched=[];
  if(S.aclState){
   var R=S.rounds,keys=[];
@@ -1185,8 +1188,9 @@ function openFormation(){
  saveGame('form');
 }
 function targetHTML(label){
+ var cwcN=(label==='今季'&&cwcYear()&&cwcQualified())?'<p class="sub" style="margin:10px 0 0">今季は<b style="color:var(--amber)">クラブワールドカップ</b>に出場します（4年に1度・32クラブ）</p>':((label==='今季'&&cwcYear())?'<p class="sub" style="margin:10px 0 0">今季はクラブワールドカップの開催年です（直近4シーズンのACLEベスト4以上で出場）</p>':'');
  var asia=(label==='今季'&&S.aclEntry)?'<p class="sub" style="margin:10px 0 0">今季のアジア：<b style="color:var(--amber)">'+aclLabel(S.aclEntry)+'</b>（昨季の'+esc(S.aclWhy||'成績')+'で出場）</p>':'';
- return asia+'<p class="sub" style="margin:10px 0 0">'+label+'の目標：<b style="color:var(--amber)">'+TGJ[S.target||'mid']+'</b>（'+tgDesc(S.target||'mid')+'）</p>'
+ return cwcN+asia+'<p class="sub" style="margin:10px 0 0">'+label+'の目標：<b style="color:var(--amber)">'+TGJ[S.target||'mid']+'</b>（'+tgDesc(S.target||'mid')+'）</p>'
   +trustBar()+(S.trust<=35?'<div class="warn">フロントの信頼が揺らいでいます。'+label+'、目標に届かなければ解任の可能性があります。</div>':'');
 }
 function renderProfile(){
@@ -1465,6 +1469,8 @@ function playRound(){
  if(S.aclState&&S.aclSched)for(var aj=0;aj<S.aclSched.length;aj++)if(S.aclSched[aj].r===S.round){
   recover(3);S.pendCong=true;runACLStage(S.aclSched[aj].k);
  }
+ if(S.cwc&&S.cwcSched)for(var cw=0;cw<S.cwcSched.length;cw++)if(S.cwcSched[cw].r===S.round){recover(3);S.pendCong=true;runCWCStage(S.cwcSched[cw].k);}
+ if(S.ic&&S.icSched)for(var ii=0;ii<S.icSched.length;ii++)if(S.icSched[ii].r===S.round){recover(3);S.pendCong=true;runICStage(S.icSched[ii].k);}
  events();updateBar();
  if(!S._bulk)saveGame('season');
 }
@@ -1673,7 +1679,146 @@ function cupRow(label,m){
   +(m.legs===2?'<span class="mst" style="display:block;font-size:10px;opacity:.55">2試合合計 '+m.gh+'-'+m.ga+' / '+m.gh2+'-'+m.ga2+'</span>':'')
   +'</span><span class="sc">'+cupScore(m)+'</span></div>';
 }
+/* ============ インターコンチネンタル杯（クラブ世界一決定戦） ============ */
+var ICD={
+ CAF:'アル･アハロー（エジプト）:4.1,ピラミッツFC（エジプト）:3.9,マメロディ･サンダウン（南アフリカ）:4.0,ウィダドAC（モロッコ）:3.8,エスペランサ･チュニス（チュニジア）:3.8',
+ OFC:'オークランド･シテイ（ニュージーランド）:2.6',
+ CONCACAF:'クルス･アズーロ（メキシコ）:3.9,パチューガ（メキシコ）:3.8,モンテレー（メキシコ）:3.9,インテレ･マイアミ（アメリカ）:3.8,シアトル･サウンダース（アメリカ）:3.6',
+ CONMEBOL:'フラメンガ（ブラジル）:4.6,パルメイラシュ（ブラジル）:4.5,ボタフォガ（ブラジル）:4.4,リーベル･プラタ（アルゼンチン）:4.5,ボカ･ジュニオルス（アルゼンチン）:4.3'};
+function icClub(conf){var d=pick(parseDef(ICD[conf]));return {id:'ic'+conf,name:d.name,st:clamp(coreOf(d.star)+gauss()*1.2,55,94),form:pick(FKEYS),tac:pick(TKEYS),conf:conf};}
+function icUEFA(){return {id:'icUEFA',name:pick(EURO.S.cA),st:clamp(coreOf(5.1)+gauss()*1.2,80,95),form:pick(FKEYS),tac:pick(TKEYS),conf:'UEFA'};}
+function buildIC(){
+ S.ic=null;S.icSched=[];
+ if(!S.icNext)return;S.icNext=false;
+ S.ic={caf:icClub('CAF'),ofc:icClub('OFC'),cnc:icClub('CONCACAF'),cmb:icClub('CONMEBOL'),uefa:icUEFA(),res:[],done:{},won:false,out:''};
+ var R=S.rounds;S.icSched=[{r:Math.round(R*.55),k:'aap'},{r:Math.round(R*.61),k:'chal'},{r:Math.round(R*.66),k:'final'}];
+}
+function icAI(a,b){var m=quickAI(a,b),w;if(m.ga===m.gb)w=Math.random()<clamp(.5+(a.st-b.st)*.01,.35,.65)?a:b;else w=m.ga>m.gb?a:b;return {n:'',a:a,b:b,ta:m.ga,tb:m.gb,pk:m.ga===m.gb,win:w};}
+function icLog(st,m){
+ var meA=!!m.a.me,opp=meA?m.b:m.a,gf=meA?m.ta:m.tb,ga=meA?m.tb:m.ta;
+ var e={t:'c',r:S.round,cup:'世界大会',st:st,n:opp.name,gf:gf,ga:ga,res:m.win.me?'w':'l',pk:!!m.pk,legs:1,home:true,neutral:true,al:''};
+ S.log.push(e);
+ if(!S._bulk){var row=document.createElement('div');row.className='row cup';row.innerHTML=logHTML(e);$('se-log').appendChild(row);$('se-log').scrollTop=$('se-log').scrollHeight;}
+}
+function icTie(label,a,b){
+ var m;
+ if(a.me||b.me){m=aclKO(a,b,1,true);m={n:label,a:m.a,b:m.b,ta:m.ta,tb:m.tb,pk:m.pk,win:m.win};icLog(label,m);}
+ else{m=icAI(a,b);m.n=label;}
+ S.ic.res.push(m);return m.win;
+}
+function runICStage(k){
+ var I=S.ic;if(!I||I.done[k])return;I.done[k]=1;
+ var me={me:true,name:S.teamName};
+ if(k==='aap'){
+  var r1=icAI(I.caf,I.ofc);r1.n='1回戦（アフリカ・オセアニア）';I.res.push(r1);
+  I.side1=icTie('アフリカ・アジア・太平洋杯',me,r1.win);
+  if(!I.side1.me)I.out='アフリカ・アジア・太平洋杯で敗退';
+  var d=icAI(I.cnc,I.cmb);d.n='アメリカ大陸ダービー';I.res.push(d);I.side2=d.win;
+ }else if(k==='chal'){
+  I.fin=icTie('チャレンジャー杯',I.side1,I.side2);
+  if(I.side1.me&&!I.fin.me)I.out='チャレンジャー杯で敗退';
+ }else if(k==='final'){
+  I.champ=icTie('決勝',I.fin,I.uefa);
+  if(I.champ.me){I.won=true;gc('ic-champion');}else if(I.fin.me)I.out='決勝で敗退（準優勝）';
+ }
+}
+function icResult(){var I=S.ic;if(!I)return '';return I.won?'世界一':(I.out||'出場');}
+function renderIC(){
+ var I=S.ic;if(!I){$('r-cup').innerHTML='<p class="sub" style="margin:0">今季は世界大会に出場していません。ACLEで優勝すると、翌シーズンに出場できます。</p>';return;}
+ var h='<div class="cupchamp">世界一：<b>'+esc(I.champ?I.champ.name:'—')+'</b>'+(I.champ&&I.champ.me?'　🏆':'')+'</div>'
+  +'<p class="sub" style="margin:8px 0 0">ACLE王者として出場。アフリカ・アジア・太平洋杯、チャレンジャー杯を勝ち抜くと、決勝で欧州王者が待っています。</p>'
+  +'<p class="sub" style="margin:6px 0 0">あなたの成績：<b style="color:var(--amber)">'+esc(icResult())+'</b></p>';
+ I.res.forEach(function(r){
+  var aw=r.win&&r.a&&r.win.name===r.a.name;
+  h+='<div class="cuprow"><span class="rd">'+esc(r.n)+'</span><span>'+(aw?'<b style="color:var(--amber)">'+esc(r.a.name)+'</b>':esc(r.a.name))+' <span style="opacity:.5">vs</span> '+(aw?esc(r.b.name):'<b style="color:var(--amber)">'+esc(r.b.name)+'</b>')+'</span><span class="sc">'+r.ta+'-'+r.tb+(r.pk?'<br><span style="font-size:10px;opacity:.7">PK</span>':'')+'</span></div>';
+ });
+ $('r-cup').innerHTML=h;
+}
+/* ============ クラブワールドカップ（4年に1度・32クラブ） ============ */
+var CWCD={CONMEBOL:ICD.CONMEBOL+',フルミネンシ（ブラジル）:4.2',CAF:ICD.CAF,CONCACAF:ICD.CONCACAF,OFC:ICD.OFC};
+function cwcYear(y){return (y||S.year)%4===0;}
+function cwcQualified(){
+ var H=(S.history||[]).slice(-4);
+ return H.some(function(e){return /ACLE(優勝| ベスト4| 準優勝)/.test(e.acl||'');});
+}
+function cwcClubs(){
+ var out=[],n=0,mk=function(name,star,conf){return {id:'cw'+(++n),name:name,st:clamp(coreOf(star)+gauss()*1.2,55,95),form:pick(FKEYS),tac:pick(TKEYS),conf:conf};};
+ shuffle(EURO.S.cA.slice()).slice(0,9).forEach(function(x){out.push(mk(x,5.0+Math.random()*.2,'UEFA'));});
+ shuffle(EURO.A.cA.slice()).slice(0,3).forEach(function(x){out.push(mk(x,4.4+Math.random()*.2,'UEFA'));});
+ [['CONMEBOL',6],['CAF',4],['CONCACAF',4],['OFC',1]].forEach(function(z){shuffle(parseDef(CWCD[z[0]])).slice(0,z[1]).forEach(function(d){out.push(mk(d.name,d.star,z[0]));});});
+ (S.acl||[]).slice().sort(function(a,b){return b.st-a.st;}).slice(0,3).forEach(function(c){out.push({id:'cw'+(++n),name:c.name,st:c.st,form:c.form,tac:c.tac,conf:'AFC',cc:c.cc,reg:c.reg});});
+ out.push(mk('ロサンゼルス･ギャラクシア（アメリカ）',3.7,'HOST'));
+ out.push({me:true,id:'ME',name:S.teamName,conf:'AFC'});
+ return out;
+}
+function buildCWC(){
+ S.cwc=null;S.cwcSched=[];
+ if(!cwcYear()||!cwcQualified())return;
+ var ust=userSt(),all=cwcClubs().sort(function(a,b){return (b.me?ust:b.st)-(a.me?ust:a.st);}),G=[[],[],[],[],[],[],[],[]];
+ for(var p=0;p<4;p++)shuffle(all.slice(p*8,p*8+8)).forEach(function(c,i){G[i].push(c);});
+ S.cwc={groups:G,myRes:{},grp:null,ko:[],champ:null,done:{}};
+ var R=S.rounds;S.cwcSched=['g0','g1','g2','r16','qf','sf','f'].map(function(k,i){return {r:Math.round(R*(.30+.035*i)),k:k};});
+ gc('cwc-entry');
+}
+function cwcLog(st,opp,gf,ga,res,pk){
+ var e={t:'c',r:S.round,cup:'クラブW杯',st:st,n:opp.name,gf:gf,ga:ga,res:res||(gf>ga?'w':gf<ga?'l':'d'),pk:!!pk,legs:1,home:true,neutral:true,al:''};
+ S.log.push(e);
+ if(!S._bulk){var row=document.createElement('div');row.className='row cup';row.innerHTML=logHTML(e);$('se-log').appendChild(row);$('se-log').scrollTop=$('se-log').scrollHeight;}
+}
+function cwcTable(g,myRes){
+ var rows=g.map(function(c){return {c:c,pts:0,gf:0,ga:0,me:!!c.me};});
+ var add=function(i,gf,ga){rows[i].gf+=gf;rows[i].ga+=ga;rows[i].pts+=gf>ga?3:gf===ga?1:0;};
+ for(var i=0;i<g.length;i++)for(var j=i+1;j<g.length;j++){
+  if(g[i].me||g[j].me){var mi=g[i].me?i:j,oi=g[i].me?j:i,r=(myRes[g[oi].id]||[])[0];if(r){add(mi,r.gf,r.ga);add(oi,r.ga,r.gf);}continue;}
+  var m=quickAI(g[i],g[j]);add(i,m.ga,m.gb);add(j,m.gb,m.ga);
+ }
+ rows.sort(function(x,y){return (y.pts-x.pts)||((y.gf-y.ga)-(x.gf-x.ga))||(y.gf-x.gf);});
+ return rows;
+}
+function runCWCStage(k){
+ var W=S.cwc;if(!W||W.done[k])return;W.done[k]=1;
+ var me=null,mg=null;W.groups.forEach(function(g){g.forEach(function(c){if(c.me){me=c;mg=g;}});});
+ if(k.charAt(0)==='g'){
+  var i=+k.slice(1),opp=mg.filter(function(c){return !c.me;})[i];
+  if(opp){var m=aclMatch(me,opp,true,'');(W.myRes[opp.id]=W.myRes[opp.id]||[]).push({gf:m.ga,ga:m.gb});cwcLog('グループステージ 第'+(i+1)+'節',opp,m.ga,m.gb);}
+  if(i===2)W.grp=W.groups.map(function(g){return cwcTable(g,W.myRes);});
+  return;
+ }
+ if(!W.grp)W.grp=W.groups.map(function(g){return cwcTable(g,W.myRes);});
+ var names={r16:'ラウンド16',qf:'準々決勝',sf:'準決勝',f:'決勝'},list=[];
+ if(k==='r16'){for(var g=0;g<8;g+=2){var A=W.grp[g],B=W.grp[g+1];list.push([A[0].c,B[1].c],[B[0].c,A[1].c]);}}
+ else{var prev=W.ko[W.ko.length-1].ms.map(function(m){return m.win;});for(var j=0;j+1<prev.length;j+=2)list.push([prev[j],prev[j+1]]);}
+ var ms=list.map(function(p){
+  var m=aclKO(p[0],p[1],1,true);
+  if(m.a.me||m.b.me){var mine=!!m.a.me;cwcLog(names[k],mine?m.b:m.a,mine?m.ta:m.tb,mine?m.tb:m.ta,m.win.me?'w':'l',m.pk);}
+  return m;});
+ W.ko.push({n:names[k],ms:ms});
+ if(k==='f'){W.champ=ms[0].win;if(W.champ.me)gc('cwc-champion');}
+}
+function cwcResult(){
+ var W=S.cwc;if(!W)return '';
+ if(W.champ&&W.champ.me)return 'クラブW杯優勝';
+ var nm={'ラウンド16':'ベスト16','準々決勝':'ベスト8','準決勝':'ベスト4','決勝':'準優勝'};
+ for(var i=W.ko.length-1;i>=0;i--)for(var j=0;j<W.ko[i].ms.length;j++){var m=W.ko[i].ms[j];if((m.a.me||m.b.me)&&!m.win.me)return 'クラブW杯 '+nm[W.ko[i].n];}
+ if(W.grp)for(var g=0;g<W.grp.length;g++)for(var r=0;r<W.grp[g].length;r++)if(W.grp[g][r].me&&r>=2)return 'クラブW杯 グループ敗退';
+ return 'クラブW杯出場';
+}
+function renderCWC(){
+ var W=S.cwc,h='';
+ if(!W){$('r-cup').innerHTML='<p class="sub" style="margin:0">今季はクラブワールドカップに出場していません。4年に1度の開催で、直近4シーズンのACLEでベスト4以上に入ると出場できます。</p>';return;}
+ h+='<div class="cupchamp">優勝：<b>'+(W.champ?aclNm(W.champ):'—')+'</b>'+(W.champ&&W.champ.me?'　🏆':'')+'</div>';
+ h+='<p class="sub" style="margin:8px 0 0">4年に1度、世界の32クラブが集う大会。あなたの成績：<b style="color:var(--amber)">'+esc(cwcResult())+'</b></p>';
+ if(W.grp){
+  h+='<h3 class="subh">グループステージ（各組2位までが決勝トーナメントへ）</h3><div class="gscroll">';
+  W.grp.forEach(function(t,i){h+='<div class="gcard"><div class="gt">グループ'+'ABCDEFGH'[i]+'</div>'+miniTable(t,2)+'</div>';});
+  h+='</div><p class="sub" style="margin:6px 0 0;font-size:11px">← 左右にスクロールできます</p>';
+ }
+ if(W.ko.length){h+='<h3 class="subh">決勝トーナメント</h3>';W.ko.forEach(function(r){r.ms.forEach(function(m){h+=aclRow(r.n,m);});});}
+ $('r-cup').innerHTML=h;
+}
 function renderCup(key){
+ if(key==='cwc'){renderCWC();return;}
+ if(key==='ic'){renderIC();return;}
  if(key==='acle'||key==='acl2'||key==='aclp'){renderACL(key);return;}
  var cup=S.cups[key],h='',i,j,path='';
  h+='<div class="cupchamp">優勝：<b>'+esc(cup.champ?cup.champ.name:'—')+'</b>'+(cup.champ&&cup.champ.me?'　🏆':'')+'</div>';
@@ -2243,6 +2388,8 @@ function finish(){
   var order=['pre','ls0','ls1','ls2','ls3','ls4','ls5','ls6','ls7','ko16','qf','sf','f'];
   for(var ao=0;ao<order.length;ao++)if(!S.aclState.done||!S.aclState.done[order[ao]])runACLStage(order[ao]);
  }
+ if(S.ic)['aap','chal','final'].forEach(runICStage);
+ if(S.cwc)['g0','g1','g2','r16','qf','sf','f'].forEach(runCWCStage);
  for(z=0;z<S.squad.length;z++){var sp=S.squad[z];sp.carry=Math.max(0,sp.injuredUntil-S.rounds);}
  computeAllTS();
  S.archive.push({year:S.year,div:S.div,log:S.log.slice()});
@@ -2307,6 +2454,10 @@ function finalizeSeason(){
  if(S.cups.emp.champ&&S.cups.emp.champ.me)cupT.push('天皇杯優勝');else if(cupFinish(S.cups.emp)==='準優勝')cupF++;
  if(S.cups.lc.champ&&S.cups.lc.champ.me)cupT.push('Jリーグカップ優勝');else if(cupFinish(S.cups.lc)==='準優勝')cupF++;
  var aclRes=S.aclState?aclMyResult():'';
+ if(S.ic&&S.ic.won)cupT.push('世界一');
+ if(S.cwc&&S.cwc.champ&&S.cwc.champ.me)cupT.push('クラブW杯優勝');
+ if(S.cwc)aclRes=(aclRes?aclRes+'・':'')+cwcResult();
+ S.icNext=(aclRes==='ACLE優勝');
  S.lastJ1=divTable(1).map(function(r){return {n:r.name,me:!!r.me};});
  S.lastEmpW=(S.cups.emp&&S.cups.emp.champ)?(S.cups.emp.champ.me?'__ME__':S.cups.emp.champ.name):null;
  S.lastACL=aclRes;
@@ -2657,7 +2808,7 @@ function renderResult(){
  $('r-sqtabs').innerHTML=gh;
  renderSquadStats();
  renderLogSelect();
- $('r-cuptabs').innerHTML='<button class="chip on" data-c="emp">天皇杯</button><button class="chip" data-c="lc">Jリーグカップ</button>'+(S.aclState?'<button class="chip" data-c="acle">ACLE</button><button class="chip" data-c="acl2">ACL2</button><button class="chip" data-c="aclp">ACLプレーオフ</button>':'');
+ $('r-cuptabs').innerHTML='<button class="chip on" data-c="emp">天皇杯</button><button class="chip" data-c="lc">Jリーグカップ</button>'+(S.aclState?'<button class="chip" data-c="acle">ACLE</button><button class="chip" data-c="acl2">ACL2</button><button class="chip" data-c="aclp">ACLプレーオフ</button>':'')+(S.ic?'<button class="chip" data-c="ic">世界大会</button>':'')+(S.cwc?'<button class="chip" data-c="cwc">クラブW杯</button>':'');
  renderCup('emp');
  var hh='<tr><th>年</th><th>ディビジョン</th><th>順位</th><th>勝点</th><th>目標</th><th>タイトル</th><th>アジア</th></tr>';
  for(var y=0;y<S.history.length;y++){
@@ -2731,7 +2882,9 @@ function makeHeadline(moved,rank,n){
  var H=S.history.length-1;
  for(var i=0;i<H;i++){if(S.history[i].div===1&&S.history[i].rank===1){prevJ1++;lastJ1=(i===H-1);}}
  var big,kicker,phrase,mood=1;
- if(titles.length>=2){
+ if(S.cwc&&S.cwc.champ&&S.cwc.champ.me){big='クラブW杯制覇！！';kicker='世界の32クラブの頂点';phrase='クラブワールドカップ制覇';}
+ else if(S.ic&&S.ic.won){big='世界一！！';kicker='インターコンチネンタル杯制覇';phrase='クラブ世界一';}
+ else if(titles.length>=2){
   var k=['','','二冠','三冠','四冠','五冠'][titles.length];
   big=titles.join('・')+' '+k+'！！';kicker=acle?'アジアの頂点も':'歴史的快挙';phrase=titles.join('・')+' '+k+'達成';
  }else if(acle){big='ACLE優勝！！';kicker='アジア制覇';phrase='悲願のアジア制覇';}
@@ -3572,6 +3725,64 @@ function bragPlayer(){
  var go=function(){var cu=cardURL(function(){return drawPlayerCard(p);});S.pcard=cu.cv;$('pd-card').src=cu.url;$('pd-share').style.display='block';};
  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(go);else go();
 }
+/* ============ クラブの歩みの号外 ============ */
+var HDIV=[{d:1,l:'J1'},{d:2,l:'J2'},{d:3,l:'J3'}];
+function histTitles(){
+ var H=S.history||[],cnt={},order=[];
+ var add=function(k){if(!cnt[k]){cnt[k]=0;order.push(k);}cnt[k]++;};
+ H.forEach(function(e){
+  if(e.rank===1)add('J'+e.div+'優勝');
+  (e.note||'').split('・').forEach(function(t){if(/^(天皇杯優勝|Jリーグカップ優勝|世界一|クラブW杯優勝)$/.test(t))add(t.replace('優勝',''));});
+  (e.acl||'').split('・').forEach(function(t){if(/^ACL(E|2)優勝$/.test(t))add(t.replace('優勝',''));});
+ });
+ return order.map(function(k){return {k:k,n:cnt[k]};});
+}
+function histBest(){var b=null;(S.history||[]).forEach(function(e){if(!b||e.div<b.div||(e.div===b.div&&e.rank<b.rank))b=e;});return b;}
+function drawHistoryCard(){
+ var cv=document.createElement('canvas');cv.width=1200;cv.height=675;
+ var x=cv.getContext('2d'),H=S.history||[],L=48,i;
+ drawBG(x,'press','even');
+ x.textAlign='left';x.textBaseline='alphabetic';
+ x.fillStyle='#FFC21A';x.font='500 20px '+FO;x.fillText('FOOTBALL CHAMPION ROAD J　/　CLUB HISTORY',L,56);
+ x.fillStyle='rgba(242,245,238,.9)';x.font='900 28px '+FJ;x.fillText('号外　クラブの歩み',L,100);
+ fitFont(x,S.teamName,700,56,'900',FJ);x.fillStyle='#F2F5EE';x.fillText(S.teamName,L,166);
+ var b=histBest(),T=histTitles(),tn=T.reduce(function(a,t){return a+t.n;},0);
+ x.textAlign='right';x.fillStyle='#FFC21A';x.font='700 64px '+FO;x.fillText(String(H.length),1150,120);
+ x.font='700 20px '+FJ;x.fillStyle='rgba(242,245,238,.85)';x.fillText('シーズン',1150,150);
+ x.fillText('最高到達 '+(b?'J'+b.div+' '+b.rank+'位':'—')+'　タイトル '+tn+'個',1150,180);
+ /* グラフ：J1〜J3を上から積んだ通算順位 */
+ var X0=110,X1=1150,Y0=215,Y1=520,size=20,tot=60,band=(Y1-Y0)/3;
+ HDIV.forEach(function(D,k){var y=Y0+band*k;x.fillStyle=k===0?'rgba(255,194,26,.16)':k===1?'rgba(143,211,255,.12)':'rgba(242,245,238,.07)';x.fillRect(X0,y,X1-X0,band);
+  x.textAlign='right';x.fillStyle='rgba(242,245,238,.8)';x.font='700 20px '+FO;x.fillText(D.l,X0-14,y+band/2+7);});
+ x.strokeStyle='rgba(242,245,238,.35)';x.lineWidth=1.5;x.strokeRect(X0,Y0,X1-X0,Y1-Y0);
+ var n=Math.max(H.length,2),px=function(i){return X0+18+(X1-X0-36)*(H.length<=1?.5:i/(H.length-1));};
+ var py=function(e){return Y0+band*(e.div-1)+band*((Math.min(e.rank,size)-1)/(size-1))*.86+band*.07;};
+ if(H.length){
+  x.beginPath();H.forEach(function(e,i){var X=px(i),Y=py(e);if(i)x.lineTo(X,Y);else x.moveTo(X,Y);});x.strokeStyle='#FFC21A';x.lineWidth=4;x.stroke();
+  H.forEach(function(e,i){var X=px(i),Y=py(e),won=e.rank===1||/優勝|世界一/.test((e.note||'')+(e.acl||''));
+   x.beginPath();x.arc(X,Y,won?9:6,0,Math.PI*2);x.fillStyle=won?'#FFC21A':'#F2F5EE';x.fill();
+   if(won){x.textAlign='center';x.font='700 18px '+FJ;x.fillStyle='#FFC21A';x.fillText('★',X,Y-14);}});
+  x.textAlign='center';x.fillStyle='rgba(242,245,238,.7)';x.font='500 16px '+FO;
+  var step=Math.ceil(H.length/12);H.forEach(function(e,i){if(i%step===0||i===H.length-1)x.fillText(e.year+'年目',px(i),Y1+26);});
+ }
+ /* タイトル一覧 */
+ x.textAlign='left';x.fillStyle='#F2F5EE';
+ var tl=T.length?T.map(function(t){return '🏆 '+t.k+(t.n>1?'×'+t.n:'');}).join('　'):'タイトルはまだありません';
+ fitFont(x,tl,1100,26,'700',FJ);x.fillText(tl,L,600);
+ x.fillStyle='rgba(242,245,238,.75)';x.font='700 22px '+FO;x.textAlign='right';x.fillText('#FCRJ',1166,650);
+ return cv;
+}
+function showHistoryCard(){
+ var H=S.history||[];if(!H.length)return;
+ var b=histBest(),T=histTitles(),tn=T.reduce(function(a,t){return a+t.n;},0);
+ S.pdId=null;S.pKind='history';S.retP={id:'history'};
+ S.pShare='【号外】'+S.teamName+'　クラブの歩み\n'+H.length+'シーズン　最高到達 '+(b?'J'+b.div+' '+b.rank+'位':'—')+'\n'+(T.length?'タイトル '+tn+'個：'+T.map(function(t){return t.k+(t.n>1?'×'+t.n:'');}).join('・'):'タイトルはこれから')+'\n#FCRJ';
+ $('pd-body').innerHTML='<div class="pdsec"><h3>クラブの歩み</h3><p style="margin:0;font-size:15px">'+esc(S.teamName)+'　'+H.length+'シーズン</p></div>';
+ $('pd-brag').style.display='none';$('pd-text').textContent=S.pShare;
+ var go=function(){var cu=cardURL(drawHistoryCard);S.pcard=cu.cv;$('pd-card').src=cu.url;$('pd-share').style.display='block';};
+ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(go);else go();
+ $('pd').hidden=false;$('pd').scrollTop=0;document.body.style.overflow='hidden';
+}
 function sharePlayer(save){
  if(!S.pcard)return;
  var p=findPlayer(S.pdId)||S.retP||{id:'t'},u=shareUrl();
@@ -3585,7 +3796,7 @@ function sharePlayer(save){
 }
 
 /* ============ セーブ ============ */
-var SAVE_KEY='fcrj-save-v1',SAVE_VER=1,VERSION='v2.3.0';
+var SAVE_KEY='fcrj-save-v1',SAVE_VER=1,VERSION='v2.5.1';
 var SKIP={timer:1,rows:1,rivals:1,card:1,pcard:1,cups:1,poAll:1,_poss:1,_pass:1,_bulk:1,shareText:1,pShare:1};
 var CM=null,CMNO=null;
 function ask(msg,yes,cb,danger){
@@ -3866,6 +4077,8 @@ $('r-rktabs').addEventListener('click',function(e){
 $('cm-yes').addEventListener('click',function(){var f=CM;CM=null;CMNO=null;$('cm').hidden=true;if(f)f();});
 $('cm-no').addEventListener('click',function(){var f=CMNO;CM=null;CMNO=null;$('cm').hidden=true;if(f)f();});
 $('btn-newgame').addEventListener('click',function(){location.reload();});
+$('btn-histshare').addEventListener('click',showHistoryCard);
+$('btn-histshare2').addEventListener('click',showHistoryCard);
 $('btn-bcopy').addEventListener('click',function(){
  var t=this.getAttribute('data-txt'),self=this;
  fb(t,function(){self.textContent='コピーしました';});
